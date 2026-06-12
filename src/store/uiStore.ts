@@ -24,6 +24,10 @@ interface UIState {
   toasts: Toast[];
   pushToast: (message: string, tone?: Toast['tone']) => void;
   dismissToast: (id: string) => void;
+
+  // Photo mode: hides UI for a clean view of the scene
+  photoMode: boolean;
+  togglePhotoMode: () => void;
 }
 
 export const useUIStore = create<UIState>((set, get) => ({
@@ -44,4 +48,7 @@ export const useUIStore = create<UIState>((set, get) => ({
     setTimeout(() => get().dismissToast(id), 3500);
   },
   dismissToast: (id) => set({ toasts: get().toasts.filter((t) => t.id !== id) }),
+
+  photoMode: false,
+  togglePhotoMode: () => set((s) => ({ photoMode: !s.photoMode, activePanel: s.photoMode ? s.activePanel : null })),
 }));

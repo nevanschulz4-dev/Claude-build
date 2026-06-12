@@ -105,6 +105,27 @@
   appearance: none;
 }
 
+/* ============ Photo Mode ============ */
+.photo-mode-toggle {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+  font-family: inherit;
+  appearance: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, rgba(20, 30, 60, 0.85), rgba(40, 20, 70, 0.85));
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 800;
+  font-size: 15px;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+}
+
 /* ============ Toasts ============ */
 .toast-container {
   position: absolute;

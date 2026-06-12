@@ -56,6 +56,9 @@ function ActivePanel() {
 }
 
 export default function App() {
+  const photoMode = useUIStore((s) => s.photoMode);
+  const togglePhotoMode = useUIStore((s) => s.togglePhotoMode);
+
   return (
     <div className="app-root">
       <Canvas shadows camera={{ position: [0, 7, 13], fov: 42 }}>
@@ -64,14 +67,20 @@ export default function App() {
         </Suspense>
       </Canvas>
 
-      <TouchControls />
+      {!photoMode && <TouchControls />}
 
-      <div className="ui-overlay">
-        <HUD />
-        <Toasts />
-        <ActivePanel />
-        <BottomNav />
-      </div>
+      {!photoMode && (
+        <div className="ui-overlay">
+          <HUD />
+          <Toasts />
+          <ActivePanel />
+          <BottomNav />
+        </div>
+      )}
+
+      <button className="photo-mode-toggle" onClick={togglePhotoMode} aria-label="Toggle photo mode">
+        {photoMode ? '✕ Exit Photo Mode' : '📷'}
+      </button>
     </div>
   );
 }
