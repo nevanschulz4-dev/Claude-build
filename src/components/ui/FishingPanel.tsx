@@ -54,6 +54,24 @@ export default function FishingPanel() {
     if (phase !== 'result') announced.current = false;
   }, [phase, result, pushToast]);
 
+  // Heads-up toast when something rare bites, to build anticipation.
+  useEffect(() => {
+    if (phase !== 'bite' || !pendingFish) return;
+    switch (pendingFish.species.rarity) {
+      case 'legendary':
+        pushToast('✨ A LEGENDARY fish is biting! Don\'t let it go!', 'success');
+        break;
+      case 'epic':
+        pushToast('🌟 An epic fish is biting!', 'success');
+        break;
+      case 'rare':
+        pushToast('💎 Something rare is on the line!', 'info');
+        break;
+      default:
+        break;
+    }
+  }, [phase, pendingFish, pushToast]);
+
   // Sound effects on phase transitions.
   const prevPhase = useRef<GamePhase>('idle');
   useEffect(() => {
