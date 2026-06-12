@@ -62,6 +62,7 @@ const WATER_LEVEL = 0.06;
 function SwimmingFish({ speciesId, path }: { speciesId: string; path: SwimPath }) {
   const species = FISH_BY_ID[speciesId];
   const groupRef = useRef<THREE.Group>(null);
+  const shadowRef = useRef<THREE.Mesh>(null);
   const splashRef = useRef<THREE.Mesh>(null);
   const splashMatRef = useRef<THREE.MeshBasicMaterial>(null);
   const lookTarget = useMemo(() => new THREE.Vector3(), []);
@@ -106,6 +107,11 @@ function SwimmingFish({ speciesId, path }: { speciesId: string; path: SwimPath }
     groupRef.current.lookAt(lookTarget);
     groupRef.current.rotation.z += jumpArc * 0.5 * path.direction;
 
+    // Soft shadow on the pond floor, tracking the fish's horizontal position.
+    if (shadowRef.current) {
+      shadowRef.current.position.set(pos.x, -0.035, pos.z);
+    }
+
     // Splash ring left behind when the fish lands back in the water.
     if (splashRef.current && splashMatRef.current) {
       if (js.splashActive) {
@@ -132,6 +138,10 @@ function SwimmingFish({ speciesId, path }: { speciesId: string; path: SwimPath }
       <group ref={groupRef}>
         <FishModel species={species} swimming phase={path.phase} />
       </group>
+      <mesh ref={shadowRef} rotation={[-Math.PI / 2, 0, 0]} scale={species.size * 0.9}>
+        <circleGeometry args={[0.55, 16]} />
+        <meshBasicMaterial color="#03101a" transparent opacity={0.22} depthWrite={false} />
+      </mesh>
       <mesh ref={splashRef} rotation={[-Math.PI / 2, 0, 0]} visible={false}>
         <ringGeometry args={[0.5, 1, 24]} />
         <meshBasicMaterial ref={splashMatRef} color="#ffffff" transparent opacity={0.5} side={THREE.DoubleSide} depthWrite={false} />
