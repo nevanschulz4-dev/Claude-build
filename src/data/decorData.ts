@@ -110,6 +110,15 @@ export const DECORATIONS: DecorationDef[] = [
     description: 'A jar of fireflies that drift and glow softly.',
   },
   {
+    id: 'tiki-torch',
+    name: 'Tiki Torch',
+    category: 'light',
+    cost: 110,
+    ratingValue: 7,
+    footprint: 0.5,
+    description: 'A bamboo torch with a crackling flame that lights up the night.',
+  },
+  {
     id: 'path-stone',
     name: 'Stepping Stones',
     category: 'path',

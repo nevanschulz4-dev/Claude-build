@@ -29,6 +29,7 @@ const DECOR_ICONS: Record<string, string> = {
   fountain: '⛲',
   lantern: '🏮',
   'firefly-jar': '🫙',
+  'tiki-torch': '🔥',
   'path-stone': '🟫',
   flamingo: '🦩',
   umbrella: '⛱️',

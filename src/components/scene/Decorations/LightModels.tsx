@@ -59,6 +59,47 @@ export function FireflyJarModel({ preview = false, valid = true }: DecorationMod
   );
 }
 
+/** Bamboo tiki torch with a flickering flame and warm point light. */
+export function TikiTorchModel({ preview = false, valid = true }: DecorationModelProps) {
+  const { mat } = useDecorMaterials(preview, valid);
+  const flameRef = useRef<THREE.Group>(null);
+  const lightRef = useRef<THREE.PointLight>(null);
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    const flicker = 0.85 + Math.sin(t * 11) * 0.1 + Math.sin(t * 23 + 1) * 0.05;
+    if (flameRef.current) {
+      flameRef.current.scale.setScalar(flicker);
+    }
+    if (lightRef.current) {
+      lightRef.current.intensity = 1.6 * flicker;
+    }
+  });
+
+  return (
+    <group>
+      {/* Bamboo post */}
+      <mesh position={[0, 0.35, 0]} material={mat('#8B5E34')} castShadow>
+        <cylinderGeometry args={[0.04, 0.05, 0.7, 8]} />
+      </mesh>
+      {/* Torch bowl */}
+      <mesh position={[0, 0.72, 0]} material={mat('#5C4326')} castShadow>
+        <cylinderGeometry args={[0.13, 0.08, 0.16, 10]} />
+      </mesh>
+      {/* Flame */}
+      <group ref={flameRef} position={[0, 0.88, 0]}>
+        <mesh material={mat('#FF8C2B', { emissive: '#FF6A00', emissiveIntensity: 1.2 })}>
+          <coneGeometry args={[0.09, 0.24, 8]} />
+        </mesh>
+        <mesh position={[0, 0.07, 0]} material={mat('#FFE07D', { emissive: '#FFD166', emissiveIntensity: 1.4 })}>
+          <coneGeometry args={[0.05, 0.14, 8]} />
+        </mesh>
+      </group>
+      {!preview && <pointLight ref={lightRef} position={[0, 0.88, 0]} color="#FF9D4D" intensity={1.6} distance={4} />}
+    </group>
+  );
+}
+
 /** Flat stepping stone for paths. */
 export function PathStoneModel({ preview = false, valid = true }: DecorationModelProps) {
   const { mat } = useDecorMaterials(preview, valid);
