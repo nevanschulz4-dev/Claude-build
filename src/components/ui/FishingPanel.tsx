@@ -97,7 +97,7 @@ export default function FishingPanel() {
         <div className="fishing-stage">
           <p className="fishing-hint shout">A fish is biting!</p>
           <button className="btn btn-hook" onClick={hook}>
-            HOOK IT! (Space)
+            HOOK IT!
           </button>
           <div className="timer-bar">
             <div className="timer-bar-fill" style={{ width: `${(biteWindowTimer / biteWindowMax) * 100}%` }} />
@@ -132,7 +132,7 @@ export default function FishingPanel() {
             onPointerLeave={() => setReeling(false)}
             onContextMenu={(e) => e.preventDefault()}
           >
-            HOLD TO REEL (Space)
+            HOLD TO REEL
           </button>
         </div>
       )}

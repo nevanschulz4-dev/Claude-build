@@ -44,6 +44,7 @@ export default function BuildPanel() {
   const setBuildSelection = useUIStore((s) => s.setBuildSelection);
   const buildRemoveMode = useUIStore((s) => s.buildRemoveMode);
   const setBuildRemoveMode = useUIStore((s) => s.setBuildRemoveMode);
+  const rotateBuildSelection = useUIStore((s) => s.rotateBuildSelection);
 
   const items = tab === 'all' ? DECORATIONS : DECORATIONS.filter((d) => d.category === tab);
 
@@ -52,8 +53,8 @@ export default function BuildPanel() {
   return (
     <div className="build-panel">
       <p className="build-intro">
-        Tap an item, then click on the grass around your pond to place it. Press{' '}
-        <strong>R</strong> to rotate.
+        Tap an item, then tap on the grass around your pond to place it. Use the{' '}
+        <strong>Rotate</strong> button (or press <strong>R</strong>) to spin it before placing.
       </p>
 
       <div className="build-stats">
@@ -111,7 +112,9 @@ export default function BuildPanel() {
       {selectedDef && (
         <div className="build-banner">
           <span>Placing: {selectedDef.name}</span>
-          <span className="build-rotate-hint">Rotate (R)</span>
+          <button className="build-rotate-button" onClick={() => rotateBuildSelection()}>
+            ↻ Rotate
+          </button>
           <button onClick={() => setBuildSelection(null)}>Cancel</button>
         </div>
       )}

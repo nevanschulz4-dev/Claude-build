@@ -15,8 +15,10 @@ interface UIState {
   // Build mode
   buildSelection: string | null; // decoration defId selected for placement
   buildRemoveMode: boolean;
+  buildRotation: number; // ghost preview rotation (radians), in build mode
   setBuildSelection: (id: string | null) => void;
   setBuildRemoveMode: (v: boolean) => void;
+  rotateBuildSelection: () => void;
 
   // Toast notifications
   toasts: Toast[];
@@ -30,8 +32,10 @@ export const useUIStore = create<UIState>((set, get) => ({
 
   buildSelection: null,
   buildRemoveMode: false,
-  setBuildSelection: (id) => set({ buildSelection: id, buildRemoveMode: false }),
+  buildRotation: 0,
+  setBuildSelection: (id) => set({ buildSelection: id, buildRemoveMode: false, buildRotation: 0 }),
   setBuildRemoveMode: (v) => set({ buildRemoveMode: v, buildSelection: v ? null : get().buildSelection }),
+  rotateBuildSelection: () => set((s) => ({ buildRotation: s.buildRotation + Math.PI / 4 })),
 
   toasts: [],
   pushToast: (message, tone = 'info') => {
