@@ -3,6 +3,7 @@ import { useGameStore } from '../../store/gameStore';
 import { useUIStore } from '../../store/uiStore';
 import { FISH_SPECIES } from '../../data/fishData';
 import { ROD_UPGRADES, WATER_THEMES } from '../../data/decorData';
+import { BAIT_TYPES } from '../../data/baitData';
 import { RARITY_COLORS } from '../../data/types';
 
 const RARITY_LABEL: Record<string, string> = {
@@ -13,12 +14,13 @@ const RARITY_LABEL: Record<string, string> = {
   legendary: 'LEGENDARY',
 };
 
-type ShopTab = 'fish' | 'rods' | 'water';
+type ShopTab = 'fish' | 'rods' | 'water' | 'bait';
 
 const TABS: { id: ShopTab; label: string }[] = [
   { id: 'fish', label: 'Fish' },
   { id: 'rods', label: 'Rods' },
   { id: 'water', label: 'Water' },
+  { id: 'bait', label: 'Bait' },
 ];
 
 export default function ShopPanel() {
@@ -44,6 +46,7 @@ export default function ShopPanel() {
       {tab === 'fish' && <FishTab />}
       {tab === 'rods' && <RodsTab />}
       {tab === 'water' && <WaterTab />}
+      {tab === 'bait' && <BaitTab />}
     </div>
   );
 }
@@ -167,6 +170,64 @@ function RodsTab() {
                     Buy
                   </button>
                 </>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function BaitTab() {
+  const money = useGameStore((s) => s.money);
+  const ownedBait = useGameStore((s) => s.ownedBait);
+  const activeBaitId = useGameStore((s) => s.activeBaitId);
+  const buyBait = useGameStore((s) => s.buyBait);
+  const setActiveBait = useGameStore((s) => s.setActiveBait);
+  const pushToast = useUIStore((s) => s.pushToast);
+
+  return (
+    <div className="item-grid">
+      <p className="build-intro" style={{ gridColumn: '1 / -1' }}>
+        Bait is consumed on each cast and boosts your luck (and bite speed) for that catch. Equip a bait, then go fishing!
+      </p>
+      {BAIT_TYPES.map((bait) => {
+        const owned = ownedBait[bait.id] ?? 0;
+        const active = activeBaitId === bait.id;
+        const canAfford = money >= bait.cost;
+
+        const handleBuy = () => {
+          const success = buyBait(bait.id, bait.cost);
+          if (success) {
+            pushToast(`Bought ${bait.name}!`, 'success');
+          } else {
+            pushToast('Not enough money!', 'warning');
+          }
+        };
+
+        return (
+          <div key={bait.id} className={`item-card ${active ? 'owned' : ''}`}>
+            <div className="item-icon">{bait.icon}</div>
+            <p className="item-name">{bait.name}</p>
+            <p className="item-desc">{bait.description}</p>
+            <p className="item-desc">
+              Luck +{Math.round(bait.luckBonus * 100)}% · Speed {bait.speedBonus >= 0 ? '+' : ''}
+              {Math.round(bait.speedBonus * 100)}%
+            </p>
+            <div className="item-footer">
+              <span className="item-cost">Owned: {owned}</span>
+              <button className="buy-button" disabled={!canAfford} onClick={handleBuy}>
+                Buy ${bait.cost}
+              </button>
+            </div>
+            <div className="item-footer">
+              {active ? (
+                <span className="equipped-badge">Equipped</span>
+              ) : (
+                <button className="buy-button" disabled={owned <= 0} onClick={() => setActiveBait(bait.id)}>
+                  Equip
+                </button>
               )}
             </div>
           </div>

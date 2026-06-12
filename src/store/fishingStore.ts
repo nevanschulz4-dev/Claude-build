@@ -5,6 +5,7 @@ import { useLocationStore } from './locationStore';
 import { useEnvironmentStore } from './environmentStore';
 import { useQuestStore } from './questStore';
 import { ROD_UPGRADES } from '../data/decorData';
+import { BAIT_BY_ID } from '../data/baitData';
 import { LOCATION_BY_ID } from '../data/locationData';
 import { FISH_BY_ID } from '../data/fishData';
 import { rollFish, getReelConfig, type RolledFish } from '../utils/fishing';
@@ -36,6 +37,7 @@ interface FishingState {
   isReeling: boolean;
 
   result: ResultState;
+  activeCastBaitId: string | null;
 
   cast: () => void;
   cancel: () => void;
@@ -69,13 +71,22 @@ export const useFishingStore = create<FishingState>((set, get) => ({
   isReeling: false,
 
   result: null,
+  activeCastBaitId: null,
 
   cast: () => {
     const { phase } = get();
     if (phase !== 'idle') return;
-    if (useGameStore.getState().unlockedFishIds.length === 0) return;
+    const gameState = useGameStore.getState();
+    if (gameState.unlockedFishIds.length === 0) return;
     if (!LOCATION_BY_ID[useLocationStore.getState().currentLocationId].fishable) return;
-    set({ phase: 'casting', castTimer: 0.6, result: null });
+
+    let castBaitId: string | null = null;
+    if (gameState.activeBaitId && (gameState.ownedBait[gameState.activeBaitId] ?? 0) > 0) {
+      castBaitId = gameState.activeBaitId;
+      gameState.consumeActiveBait();
+    }
+
+    set({ phase: 'casting', castTimer: 0.6, result: null, activeCastBaitId: castBaitId });
   },
 
   cancel: () => {
@@ -83,6 +94,7 @@ export const useFishingStore = create<FishingState>((set, get) => ({
       phase: 'idle',
       pendingFish: null,
       isReeling: false,
+      activeCastBaitId: null,
     });
   },
 
@@ -116,10 +128,12 @@ export const useFishingStore = create<FishingState>((set, get) => ({
         const t = state.castTimer - delta;
         if (t <= 0) {
           const env = useEnvironmentStore.getState();
+          const bait = state.activeCastBaitId ? BAIT_BY_ID[state.activeCastBaitId] : undefined;
           let biteSpeedMod = 1;
           if (env.isNight()) biteSpeedMod *= 0.75;
           if (env.weather === 'rain') biteSpeedMod *= 0.8;
-          const biteTime = Math.max(0.5, (1.0 + Math.random() * 2.4) * (1 - rod.speedBonus * 0.5) * biteSpeedMod);
+          const speedBonus = rod.speedBonus + (bait?.speedBonus ?? 0);
+          const biteTime = Math.max(0.5, (1.0 + Math.random() * 2.4) * (1 - speedBonus * 0.5) * biteSpeedMod);
           set({ phase: 'waiting', castTimer: 0, biteTimer: biteTime });
         } else {
           set({ castTimer: t });
@@ -136,7 +150,8 @@ export const useFishingStore = create<FishingState>((set, get) => ({
           );
           const fishPool = habitatFish.length > 0 ? habitatFish : gameState.unlockedFishIds;
           const env = useEnvironmentStore.getState();
-          let envLuckBonus = 0;
+          const bait = state.activeCastBaitId ? BAIT_BY_ID[state.activeCastBaitId] : undefined;
+          let envLuckBonus = bait?.luckBonus ?? 0;
           if (env.isNight()) envLuckBonus += 0.18;
           if (env.weather === 'rain') envLuckBonus += 0.12;
           const pendingFish = rollFish(fishPool, rod.luckBonus + envLuckBonus, gameState.pondRating());
@@ -221,6 +236,6 @@ export const useFishingStore = create<FishingState>((set, get) => ({
   },
 
   acknowledgeResult: () => {
-    set({ phase: 'idle', result: null, pendingFish: null });
+    set({ phase: 'idle', result: null, pendingFish: null, activeCastBaitId: null });
   },
 }));

@@ -6,6 +6,7 @@ import { useLocationStore } from '../../store/locationStore';
 import { LOCATION_BY_ID } from '../../data/locationData';
 import { RARITY_COLORS } from '../../data/types';
 import type { GamePhase } from '../../data/types';
+import { BAIT_BY_ID } from '../../data/baitData';
 import { unlockAudio, playCast, playBite, playHook, playCatch, playMiss } from '../../utils/audio';
 
 const RARITY_LABEL: Record<string, string> = {
@@ -221,5 +222,15 @@ export default function FishingPanel() {
 
 function FishingFooter() {
   const inventoryCount = useGameStore((s) => s.inventory.length);
-  return <p className="fishing-footer">Inventory: {inventoryCount}/16</p>;
+  const activeBaitId = useGameStore((s) => s.activeBaitId);
+  const ownedBait = useGameStore((s) => s.ownedBait);
+  const bait = activeBaitId ? BAIT_BY_ID[activeBaitId] : null;
+  const baitCount = activeBaitId ? ownedBait[activeBaitId] ?? 0 : 0;
+
+  return (
+    <p className="fishing-footer">
+      Inventory: {inventoryCount}/16
+      {bait && ` · Bait: ${bait.icon} ${bait.name} x${baitCount}`}
+    </p>
+  );
 }

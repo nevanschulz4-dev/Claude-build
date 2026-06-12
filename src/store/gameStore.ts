@@ -32,6 +32,8 @@ interface GameState {
   nightCatches: number;
   rainCatches: number;
   visitedLocations: LocationId[];
+  ownedBait: Record<string, number>;
+  activeBaitId: string | null;
 
   // actions
   addMoney: (amount: number) => void;
@@ -47,6 +49,9 @@ interface GameState {
   pondRating: () => number;
   toggleSound: () => void;
   visitLocation: (id: LocationId) => void;
+  buyBait: (id: string, cost: number) => boolean;
+  setActiveBait: (id: string | null) => void;
+  consumeActiveBait: () => void;
 }
 
 export const useGameStore = create<GameState>()(
@@ -68,6 +73,8 @@ export const useGameStore = create<GameState>()(
       nightCatches: 0,
       rainCatches: 0,
       visitedLocations: ['home'],
+      ownedBait: {},
+      activeBaitId: null,
 
       addMoney: (amount) => set((s) => ({ money: s.money + amount, totalEarned: s.totalEarned + Math.max(0, amount) })),
 
@@ -192,6 +199,33 @@ export const useGameStore = create<GameState>()(
         const { visitedLocations } = get();
         if (visitedLocations.includes(id)) return;
         set({ visitedLocations: [...visitedLocations, id] });
+      },
+
+      buyBait: (id, cost) => {
+        const { money, ownedBait, activeBaitId } = get();
+        if (money < cost) return false;
+        set({
+          money: money - cost,
+          ownedBait: { ...ownedBait, [id]: (ownedBait[id] ?? 0) + 1 },
+          activeBaitId: activeBaitId ?? id,
+        });
+        return true;
+      },
+
+      setActiveBait: (id) => {
+        if (id !== null && (get().ownedBait[id] ?? 0) <= 0) return;
+        set({ activeBaitId: id });
+      },
+
+      consumeActiveBait: () => {
+        const { activeBaitId, ownedBait } = get();
+        if (!activeBaitId) return;
+        const remaining = (ownedBait[activeBaitId] ?? 0) - 1;
+        const nextOwned = { ...ownedBait, [activeBaitId]: Math.max(0, remaining) };
+        set({
+          ownedBait: nextOwned,
+          activeBaitId: remaining > 0 ? activeBaitId : null,
+        });
       },
     }),
     {
