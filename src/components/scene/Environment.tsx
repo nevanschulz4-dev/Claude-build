@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Sky, Stars } from '@react-three/drei';
 import { useToonGradient, useGrassTexture, useSandTexture, useMudTexture } from '../../utils/textures';
@@ -18,20 +18,32 @@ interface TreeProps {
 }
 
 function Tree({ position, scale, trunkColor, leafColor, gradientMap }: TreeProps) {
+  const foliageRef = useRef<THREE.Group>(null);
+  const phase = useMemo(() => position[0] * 0.7 + position[2] * 0.3, [position]);
+
+  useFrame(({ clock }) => {
+    if (!foliageRef.current) return;
+    const t = clock.getElapsedTime();
+    foliageRef.current.rotation.z = Math.sin(t * 0.8 + phase) * 0.025;
+    foliageRef.current.rotation.x = Math.sin(t * 0.6 + phase * 1.3) * 0.02;
+  });
+
   return (
     <group position={position} scale={scale}>
       <mesh position={[0, 0.6, 0]} castShadow>
         <cylinderGeometry args={[0.18, 0.25, 1.2, 6]} />
         <meshToonMaterial color={trunkColor} gradientMap={gradientMap} />
       </mesh>
-      <mesh position={[0, 1.6, 0]} castShadow>
-        <coneGeometry args={[1.0, 1.6, 7]} />
-        <meshToonMaterial color={leafColor} gradientMap={gradientMap} />
-      </mesh>
-      <mesh position={[0, 2.3, 0]} castShadow>
-        <coneGeometry args={[0.75, 1.2, 7]} />
-        <meshToonMaterial color={leafColor} gradientMap={gradientMap} />
-      </mesh>
+      <group ref={foliageRef} position={[0, 1.2, 0]}>
+        <mesh position={[0, 0.4, 0]} castShadow>
+          <coneGeometry args={[1.0, 1.6, 7]} />
+          <meshToonMaterial color={leafColor} gradientMap={gradientMap} />
+        </mesh>
+        <mesh position={[0, 1.1, 0]} castShadow>
+          <coneGeometry args={[0.75, 1.2, 7]} />
+          <meshToonMaterial color={leafColor} gradientMap={gradientMap} />
+        </mesh>
+      </group>
     </group>
   );
 }
