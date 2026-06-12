@@ -215,6 +215,7 @@ export const useFishingStore = create<FishingState>((set, get) => ({
             value: state.pendingFish.value,
             isNewSpecies,
             isNight: useEnvironmentStore.getState().isNight(),
+            isRaining: useEnvironmentStore.getState().weather === 'rain',
           });
           set({ phase: 'result', result: state.pendingFish, pendingFish: null, isReeling: false });
         } else if (progress <= 0 || timeLeft <= 0) {

@@ -5,7 +5,7 @@ import type { Rarity, LocationId } from '../data/types';
 import { LOCATIONS } from '../data/locationData';
 import { useGameStore } from './gameStore';
 
-export type QuestType = 'catchAny' | 'catchRarity' | 'catchBiome' | 'discoverSpecies' | 'catchValue' | 'catchNight';
+export type QuestType = 'catchAny' | 'catchRarity' | 'catchBiome' | 'discoverSpecies' | 'catchValue' | 'catchNight' | 'catchRain';
 
 export interface Quest {
   id: string;
@@ -26,6 +26,7 @@ interface RegisterCatchParams {
   value: number;
   isNewSpecies: boolean;
   isNight: boolean;
+  isRaining: boolean;
 }
 
 interface QuestState {
@@ -143,13 +144,24 @@ function makeQuest(type: QuestType): Quest {
         reward: 120,
         claimed: false,
       };
+    case 'catchRain':
+      return {
+        id: uid(),
+        type,
+        description: 'Catch a fish while it\'s raining',
+        icon: '🌧️',
+        target: 1,
+        progress: 0,
+        reward: 130,
+        claimed: false,
+      };
     default:
       throw new Error(`Unknown quest type: ${type}`);
   }
 }
 
 function generateDailyQuests(): Quest[] {
-  const types: QuestType[] = ['catchAny', 'catchRarity', 'catchBiome', 'discoverSpecies', 'catchValue', 'catchNight'];
+  const types: QuestType[] = ['catchAny', 'catchRarity', 'catchBiome', 'discoverSpecies', 'catchValue', 'catchNight', 'catchRain'];
   // Shuffle and take 3 distinct quest types.
   for (let i = types.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -172,7 +184,7 @@ export const useQuestStore = create<QuestState>()(
         }
       },
 
-      registerCatch: ({ rarity, locationId, value, isNewSpecies, isNight }) => {
+      registerCatch: ({ rarity, locationId, value, isNewSpecies, isNight, isRaining }) => {
         const { quests } = get();
         const rarityIdx = RARITY_ORDER.indexOf(rarity);
         const updated = quests.map((q) => {
@@ -195,6 +207,9 @@ export const useQuestStore = create<QuestState>()(
               return { ...q, progress: Math.min(q.target, q.progress + value) };
             case 'catchNight':
               if (isNight) return { ...q, progress: q.target };
+              return q;
+            case 'catchRain':
+              if (isRaining) return { ...q, progress: q.target };
               return q;
             default:
               return q;
