@@ -51,6 +51,8 @@ const HILL_COLORS = ['#5CA85C', '#4F9B5E'];
 interface EnvironmentProps extends EnvironmentTheme {
   /** The current fishing biome, used to render distinctive landmarks. */
   biomeId?: Exclude<LocationId, 'home'>;
+  /** Radius of the pond, used to size the surrounding rim. */
+  pondRadius?: number;
 }
 
 export default function Environment({
@@ -68,6 +70,7 @@ export default function Environment({
   treeLeafColors = LEAF_COLORS,
   hillColors = HILL_COLORS,
   biomeId,
+  pondRadius = 6,
 }: EnvironmentProps) {
   const gradientMap = useToonGradient(4);
   const grassTexture = useGrassTexture();
@@ -222,7 +225,7 @@ export default function Environment({
 
       {/* Pond rim */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]} receiveShadow>
-        <ringGeometry args={[6, 6.6, 64]} />
+        <ringGeometry args={[pondRadius, pondRadius + 0.6, 64]} />
         <meshToonMaterial map={textures[rimTexture]} gradientMap={gradientMap} color={rimTint ?? '#ffffff'} />
       </mesh>
 

@@ -9,23 +9,26 @@ import Bubbles from '../Bubbles';
 import Dragonflies from '../Dragonflies';
 import AmbientMinnows from '../AmbientMinnows';
 import FloatingLeaves from '../FloatingLeaves';
+import { getPondRadius } from '../../../utils/pond';
 
 /** The player's home pond: decorative, non-fishable, shows unlocked fish swimming. */
 export default function HomeScene() {
   const waterThemeId = useGameStore((s) => s.waterThemeId);
+  const pondRating = useGameStore((s) => s.pondRating());
   const theme = WATER_THEMES.find((t) => t.id === waterThemeId) ?? WATER_THEMES[0];
+  const pondRadius = getPondRadius(pondRating);
 
   return (
     <>
-      <Environment />
-      <Water radius={6} shallow={theme.shallow} deep={theme.deep} foam={theme.foam} />
-      <Bubbles radius={6} />
+      <Environment pondRadius={pondRadius} />
+      <Water radius={pondRadius} shallow={theme.shallow} deep={theme.deep} foam={theme.foam} />
+      <Bubbles radius={pondRadius} />
       <Dragonflies />
       <AmbientMinnows />
-      <FloatingLeaves radius={6} />
-      <PondFishLayer />
+      <FloatingLeaves radius={pondRadius} />
+      <PondFishLayer pondRadius={pondRadius} />
       <DecorationsLayer />
-      <PlacementController />
+      <PlacementController pondRadius={pondRadius} />
     </>
   );
 }

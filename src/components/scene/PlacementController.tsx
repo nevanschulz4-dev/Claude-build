@@ -9,7 +9,6 @@ import DecorationModel from './Decorations/DecorationModel';
 const PLAYER_POS = new THREE.Vector2(0, 7.1);
 const PLAYER_EXCLUSION_RADIUS = 1.6;
 
-const POND_RADIUS = 6;
 const GROUND_RADIUS = 18;
 const GROUND_MARGIN = 1.5; // keep placements a bit inside the grass edge
 
@@ -19,7 +18,7 @@ const TAP_MOVE_THRESHOLD = 8;
 /** Decoration ids that are placeable on the water surface (near the pond edge). */
 const WATER_DECOR_IDS = new Set(['lilypad']);
 
-export default function PlacementController() {
+export default function PlacementController({ pondRadius = 6 }: { pondRadius?: number }) {
   const buildSelection = useUIStore((s) => s.buildSelection);
   const rotation = useUIStore((s) => s.buildRotation);
   const rotateBuildSelection = useUIStore((s) => s.rotateBuildSelection);
@@ -67,7 +66,7 @@ export default function PlacementController() {
     }
 
     // Ground decorations must be outside the pond.
-    if (dist < POND_RADIUS + 0.2) return false;
+    if (dist < pondRadius + 0.2) return false;
 
     return true;
   };
@@ -100,7 +99,7 @@ export default function PlacementController() {
     if (!valid) return;
 
     // Decide placement height: on water surface for water decor, otherwise ground level.
-    const y = allowWater && Math.hypot(point.x, point.z) < POND_RADIUS ? 0.05 : 0;
+    const y = allowWater && Math.hypot(point.x, point.z) < pondRadius ? 0.05 : 0;
 
     const success = placeDecoration(buildSelection, [point.x, y, point.z], rotation);
     if (success) {
@@ -111,7 +110,7 @@ export default function PlacementController() {
   };
 
   const valid = cursor ? computeValidity(cursor) : false;
-  const ghostY = cursor && allowWater && Math.hypot(cursor.x, cursor.z) < POND_RADIUS ? 0.05 : 0;
+  const ghostY = cursor && allowWater && Math.hypot(cursor.x, cursor.z) < pondRadius ? 0.05 : 0;
 
   return (
     <group>

@@ -6,6 +6,7 @@ import { FISH_BY_ID } from '../../data/fishData';
 import type { SwimPattern } from '../../data/types';
 import FishModel from './FishModel';
 import { playSplash } from '../../utils/audio';
+import { POND_BASE_RADIUS } from '../../utils/pond';
 
 interface SwimPath {
   radiusX: number;
@@ -150,8 +151,9 @@ function SwimmingFish({ speciesId, path }: { speciesId: string; path: SwimPath }
   );
 }
 
-export default function PondFishLayer() {
+export default function PondFishLayer({ pondRadius = POND_BASE_RADIUS }: { pondRadius?: number }) {
   const unlockedFishIds = useGameStore((s) => s.unlockedFishIds);
+  const spread = pondRadius / POND_BASE_RADIUS;
 
   const paths = useMemo(() => {
     const map: Record<string, SwimPath> = {};
@@ -186,8 +188,8 @@ export default function PondFishLayer() {
       }
 
       map[id] = {
-        radiusX,
-        radiusZ,
+        radiusX: radiusX * spread,
+        radiusZ: radiusZ * spread,
         speed,
         phase: seed,
         depth: -0.15 - ((seed * 5) % 10) / 40,
@@ -196,7 +198,7 @@ export default function PondFishLayer() {
       };
     });
     return map;
-  }, [unlockedFishIds]);
+  }, [unlockedFishIds, spread]);
 
   return (
     <group>

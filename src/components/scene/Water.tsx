@@ -55,6 +55,7 @@ const FRAGMENT_SHADER = /* glsl */ `
   uniform float uTime;
   uniform float uNight;
   uniform float uRain;
+  uniform float uRadius;
 
   varying vec3 vWorldPos;
   varying vec3 vNormalW;
@@ -67,7 +68,7 @@ const FRAGMENT_SHADER = /* glsl */ `
 
     float fresnel = pow(1.0 - clamp(dot(viewDir, normal), 0.0, 1.0), 3.0);
 
-    float depthMix = clamp(vLocalRadius / 6.0, 0.0, 1.0);
+    float depthMix = clamp(vLocalRadius / uRadius, 0.0, 1.0);
     vec3 base = mix(uShallow, uDeep, depthMix);
 
     vec3 sunDir = normalize(uSunDir);
@@ -122,6 +123,7 @@ export default function Water({ radius = 6, shallow, deep, foam, flowing = false
       uCameraPos: { value: new THREE.Vector3() },
       uNight: { value: 0 },
       uRain: { value: 0 },
+      uRadius: { value: radius },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
@@ -136,6 +138,7 @@ export default function Water({ radius = 6, shallow, deep, foam, flowing = false
     materialRef.current.uniforms.uFoam.value.set(foam);
     materialRef.current.uniforms.uFlow.value = flowing ? 1 : 0;
     materialRef.current.uniforms.uWaveScale.value = waveScale;
+    materialRef.current.uniforms.uRadius.value = radius;
 
     const { timeOfDay, weather } = useEnvironmentStore.getState();
     const dayFactor = getDayFactor(timeOfDay);
