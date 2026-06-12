@@ -5,6 +5,7 @@ import Bubbles from '../Bubbles';
 import Dragonflies from '../Dragonflies';
 import AmbientMinnows from '../AmbientMinnows';
 import FloatingLeaves from '../FloatingLeaves';
+import Jellyfish from '../Jellyfish';
 import type { BiomeDef, LocationId } from '../../../data/types';
 
 interface FishingLocationSceneProps {
@@ -31,6 +32,7 @@ export default function FishingLocationScene({ biome, biomeId }: FishingLocation
       {biomeId !== 'ocean' && <Dragonflies />}
       <AmbientMinnows />
       {biomeId !== 'ocean' && <FloatingLeaves radius={6} />}
+      {biomeId === 'ocean' && <Jellyfish />}
       <FishingRig />
     </>
   );
