@@ -63,6 +63,39 @@ export function useGrassTexture(): THREE.Texture {
   }, []);
 }
 
+/** Procedural muddy swamp ground texture. */
+export function useMudTexture(): THREE.Texture {
+  return useMemo(() => {
+    const size = 256;
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d')!;
+
+    ctx.fillStyle = '#5C5238';
+    ctx.fillRect(0, 0, size, size);
+
+    const colors = ['#4A4530', '#6B5F40', '#3E3A28', '#544B30'];
+    const rng = makeRng(3);
+    for (let i = 0; i < 900; i++) {
+      ctx.fillStyle = colors[Math.floor(rng() * colors.length)];
+      const x = rng() * size;
+      const y = rng() * size;
+      const r = 2 + rng() * 6;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(10, 10);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    return texture;
+  }, []);
+}
+
 /** Procedural sandy/stone texture for the pond rim and paths. */
 export function useSandTexture(): THREE.Texture {
   return useMemo(() => {

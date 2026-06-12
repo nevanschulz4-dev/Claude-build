@@ -1,7 +1,10 @@
 import { create } from 'zustand';
 import type { GamePhase } from '../data/types';
 import { useGameStore } from './gameStore';
+import { useLocationStore } from './locationStore';
 import { ROD_UPGRADES } from '../data/decorData';
+import { LOCATION_BY_ID } from '../data/locationData';
+import { FISH_BY_ID } from '../data/fishData';
 import { rollFish, getReelConfig, type RolledFish } from '../utils/fishing';
 
 const REEL_GRAVITY = 1.6;
@@ -69,6 +72,7 @@ export const useFishingStore = create<FishingState>((set, get) => ({
     const { phase } = get();
     if (phase !== 'idle') return;
     if (useGameStore.getState().unlockedFishIds.length === 0) return;
+    if (!LOCATION_BY_ID[useLocationStore.getState().currentLocationId].fishable) return;
     set({ phase: 'casting', castTimer: 0.6, result: null });
   },
 
@@ -120,7 +124,12 @@ export const useFishingStore = create<FishingState>((set, get) => ({
         const t = state.biteTimer - delta;
         if (t <= 0) {
           const gameState = useGameStore.getState();
-          const pendingFish = rollFish(gameState.unlockedFishIds, rod.luckBonus, gameState.pondRating());
+          const currentLocationId = useLocationStore.getState().currentLocationId;
+          const habitatFish = gameState.unlockedFishIds.filter((id) =>
+            FISH_BY_ID[id]?.habitats.includes(currentLocationId),
+          );
+          const fishPool = habitatFish.length > 0 ? habitatFish : gameState.unlockedFishIds;
+          const pendingFish = rollFish(fishPool, rod.luckBonus, gameState.pondRating());
           const windowMax = Math.max(0.5, 1.05 + rod.reelWindowBonus * 0.5 - (pendingFish.species.rarity === 'legendary' ? 0.25 : 0));
           set({
             phase: 'bite',

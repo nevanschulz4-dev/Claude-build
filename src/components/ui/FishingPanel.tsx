@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 import { useFishingStore } from '../../store/fishingStore';
 import { useGameStore } from '../../store/gameStore';
 import { useUIStore } from '../../store/uiStore';
+import { useLocationStore } from '../../store/locationStore';
+import { LOCATION_BY_ID } from '../../data/locationData';
 import { RARITY_COLORS } from '../../data/types';
 
 const RARITY_LABEL: Record<string, string> = {
@@ -31,6 +33,8 @@ export default function FishingPanel() {
   const acknowledgeResult = useFishingStore((s) => s.acknowledgeResult);
 
   const pushToast = useUIStore((s) => s.pushToast);
+  const setActivePanel = useUIStore((s) => s.setActivePanel);
+  const currentLocation = useLocationStore((s) => LOCATION_BY_ID[s.currentLocationId]);
   const announced = useRef(false);
 
   useEffect(() => {
@@ -69,11 +73,20 @@ export default function FishingPanel() {
 
   return (
     <div className="fishing-panel">
-      {phase === 'idle' && (
+      {phase === 'idle' && currentLocation.fishable && (
         <div className="fishing-stage">
-          <p className="fishing-hint">Cast your line into the pond and wait for a bite.</p>
+          <p className="fishing-hint">Cast your line into the water and wait for a bite.</p>
           <button className="btn btn-cast" onClick={cast}>
             🎣 Cast Line
+          </button>
+        </div>
+      )}
+
+      {phase === 'idle' && !currentLocation.fishable && (
+        <div className="fishing-stage">
+          <p className="fishing-hint">The fish here are too spoiled to bite a hook. Travel to a fishing spot to cast a line.</p>
+          <button className="btn btn-cast" onClick={() => setActivePanel('travel')}>
+            🗺️ Travel
           </button>
         </div>
       )}

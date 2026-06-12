@@ -13,6 +13,7 @@ export const FISH_SPECIES: FishSpecies[] = [
     finColor: '#2E6E33',
     unlockCost: 0,
     description: 'A hardy bass found in every pond. Reliable, if unremarkable.',
+    habitats: ['river', 'lake', 'ocean'],
   },
   {
     id: 'pebblecarp',
@@ -26,6 +27,7 @@ export const FISH_SPECIES: FishSpecies[] = [
     finColor: '#6E5530',
     unlockCost: 0,
     description: 'Plump and speckled like river stones.',
+    habitats: ['river', 'lake', 'swamp'],
   },
   {
     id: 'stripeperch',
@@ -39,6 +41,7 @@ export const FISH_SPECIES: FishSpecies[] = [
     finColor: '#1E3A8A',
     unlockCost: 120,
     description: 'Bold stripes make this perch easy to spot, hard to catch.',
+    habitats: ['river', 'lake'],
   },
   {
     id: 'glassminnow',
@@ -52,6 +55,7 @@ export const FISH_SPECIES: FishSpecies[] = [
     finColor: '#5FB8E8',
     unlockCost: 150,
     description: 'Nearly transparent, it shimmers like glass underwater.',
+    habitats: ['river', 'swamp'],
   },
   {
     id: 'emberkoi',
@@ -65,6 +69,7 @@ export const FISH_SPECIES: FishSpecies[] = [
     finColor: '#FF914D',
     unlockCost: 400,
     description: 'A prized ornamental koi with fiery orange patterns.',
+    habitats: ['lake', 'swamp'],
   },
   {
     id: 'azurering',
@@ -78,6 +83,7 @@ export const FISH_SPECIES: FishSpecies[] = [
     finColor: '#67E8F9',
     unlockCost: 450,
     description: 'Concentric rings glow faintly along its tail.',
+    habitats: ['ocean', 'lake'],
   },
   {
     id: 'shadoweel',
@@ -92,6 +98,7 @@ export const FISH_SPECIES: FishSpecies[] = [
     glow: true,
     unlockCost: 1200,
     description: 'Slips through the water like a ribbon of living shadow.',
+    habitats: ['swamp', 'ocean'],
   },
   {
     id: 'crystalcarp',
@@ -106,6 +113,7 @@ export const FISH_SPECIES: FishSpecies[] = [
     glow: true,
     unlockCost: 1400,
     description: 'Its scales refract light like polished crystal facets.',
+    habitats: ['lake', 'river'],
   },
   {
     id: 'goldendrake',
@@ -120,6 +128,7 @@ export const FISH_SPECIES: FishSpecies[] = [
     glow: true,
     unlockCost: 4000,
     description: 'A legendary fish said to grant fortune to whoever lands it.',
+    habitats: ['lake', 'ocean'],
   },
   {
     id: 'starlightorca',
@@ -134,6 +143,7 @@ export const FISH_SPECIES: FishSpecies[] = [
     glow: true,
     unlockCost: 6000,
     description: 'A miniature whale-fin hybrid that glimmers like the night sky.',
+    habitats: ['ocean'],
   },
 ];
 

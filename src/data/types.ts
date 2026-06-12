@@ -37,6 +37,8 @@ export interface FishSpecies {
   /** Cost to unlock/stock this species in the shop. 0 = available from the start */
   unlockCost: number;
   description: string;
+  /** Fishing locations where this species can be caught */
+  habitats: LocationId[];
 }
 
 export type DecorationCategory = 'plant' | 'rock' | 'structure' | 'light' | 'path' | 'fun';
@@ -91,3 +93,36 @@ export type WaterTheme = {
 };
 
 export type GamePhase = 'idle' | 'casting' | 'waiting' | 'bite' | 'reeling' | 'result';
+
+export type LocationId = 'home' | 'river' | 'lake' | 'ocean' | 'swamp';
+
+export interface LocationDef {
+  id: LocationId;
+  name: string;
+  icon: string;
+  description: string;
+  /** Whether you can cast a line here */
+  fishable: boolean;
+}
+
+/** Visual theme overrides for an outdoor Environment scene */
+export interface EnvironmentTheme {
+  groundTexture?: 'grass' | 'sand' | 'mud';
+  groundTint?: string;
+  rimTexture?: 'grass' | 'sand' | 'mud';
+  rimTint?: string;
+  skyTurbidity?: number;
+  skyRayleigh?: number;
+  mieCoefficient?: number;
+  mieDirectionalG?: number;
+  sunPosition?: [number, number, number];
+  ambientColor?: string;
+  hemisphereSky?: string;
+  hemisphereGround?: string;
+  treeLeafColors?: string[];
+  hillColors?: string[];
+}
+
+export interface BiomeDef extends EnvironmentTheme {
+  water: { shallow: string; deep: string; foam: string };
+}

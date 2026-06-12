@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Sky } from '@react-three/drei';
-import { useToonGradient, useGrassTexture, useSandTexture } from '../../utils/textures';
+import { useToonGradient, useGrassTexture, useSandTexture, useMudTexture } from '../../utils/textures';
+import type { EnvironmentTheme } from '../../data/types';
 import * as THREE from 'three';
 
 interface TreeProps {
@@ -40,11 +41,34 @@ function Hill({ position, scale, color, gradientMap }: { position: [number, numb
 }
 
 const LEAF_COLORS = ['#3FA34D', '#52B768', '#2E8B4E', '#6BC36F'];
+const HILL_COLORS = ['#5CA85C', '#4F9B5E'];
 
-export default function Environment() {
+export default function Environment({
+  groundTexture = 'grass',
+  groundTint,
+  rimTexture = 'sand',
+  rimTint,
+  skyTurbidity = 8,
+  skyRayleigh = 2.5,
+  mieCoefficient = 0.006,
+  mieDirectionalG = 0.75,
+  sunPosition = [20, 18, 10],
+  ambientColor = '#fff7e8',
+  hemisphereSky = '#bfe9ff',
+  hemisphereGround = '#7bc47f',
+  treeLeafColors = LEAF_COLORS,
+  hillColors = HILL_COLORS,
+}: EnvironmentTheme) {
   const gradientMap = useToonGradient(4);
   const grassTexture = useGrassTexture();
   const sandTexture = useSandTexture();
+  const mudTexture = useMudTexture();
+
+  const textures: Record<'grass' | 'sand' | 'mud', THREE.Texture> = {
+    grass: grassTexture,
+    sand: sandTexture,
+    mud: mudTexture,
+  };
 
   const trees = useMemo(() => {
     const items: { position: [number, number, number]; scale: number; leafColor: string }[] = [];
@@ -55,11 +79,11 @@ export default function Environment() {
       items.push({
         position: [Math.cos(angle) * r, 0, Math.sin(angle) * r],
         scale: 1.1 + ((i * 37) % 10) / 10,
-        leafColor: LEAF_COLORS[i % LEAF_COLORS.length],
+        leafColor: treeLeafColors[i % treeLeafColors.length],
       });
     }
     return items;
-  }, []);
+  }, [treeLeafColors]);
 
   const hills = useMemo(() => {
     const items: { position: [number, number, number]; scale: number; color: string }[] = [];
@@ -70,20 +94,20 @@ export default function Environment() {
       items.push({
         position: [Math.cos(angle) * r, -1, Math.sin(angle) * r],
         scale: 8 + (i % 3) * 3,
-        color: i % 2 === 0 ? '#5CA85C' : '#4F9B5E',
+        color: hillColors[i % hillColors.length],
       });
     }
     return items;
-  }, []);
+  }, [hillColors]);
 
   return (
     <>
       {/* Sky + sun */}
-      <Sky distance={450000} sunPosition={[20, 18, 10]} turbidity={8} rayleigh={2.5} mieCoefficient={0.006} mieDirectionalG={0.75} />
+      <Sky distance={450000} sunPosition={sunPosition} turbidity={skyTurbidity} rayleigh={skyRayleigh} mieCoefficient={mieCoefficient} mieDirectionalG={mieDirectionalG} />
 
       {/* Lighting */}
-      <ambientLight intensity={0.55} color="#fff7e8" />
-      <hemisphereLight args={['#bfe9ff', '#7bc47f', 0.6]} />
+      <ambientLight intensity={0.55} color={ambientColor} />
+      <hemisphereLight args={[hemisphereSky, hemisphereGround, 0.6]} />
       <directionalLight
         position={[20, 25, 15]}
         intensity={2.2}
@@ -103,13 +127,13 @@ export default function Environment() {
       {/* Ground island */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.05, 0]} receiveShadow>
         <circleGeometry args={[18, 64]} />
-        <meshToonMaterial map={grassTexture} gradientMap={gradientMap} color="#ffffff" />
+        <meshToonMaterial map={textures[groundTexture]} gradientMap={gradientMap} color={groundTint ?? '#ffffff'} />
       </mesh>
 
       {/* Pond rim */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]} receiveShadow>
         <ringGeometry args={[6, 6.6, 64]} />
-        <meshToonMaterial map={sandTexture} gradientMap={gradientMap} color="#ffffff" />
+        <meshToonMaterial map={textures[rimTexture]} gradientMap={gradientMap} color={rimTint ?? '#ffffff'} />
       </mesh>
 
       {/* Background scenery */}

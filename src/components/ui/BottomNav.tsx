@@ -3,6 +3,7 @@ import { useGameStore } from '../../store/gameStore';
 import type { PanelId } from '../../store/uiStore';
 
 const TABS: { id: PanelId; label: string; icon: string }[] = [
+  { id: 'travel', label: 'Travel', icon: '🗺️' },
   { id: 'fishing', label: 'Fish', icon: '🎣' },
   { id: 'build', label: 'Build', icon: '🏞️' },
   { id: 'shop', label: 'Shop', icon: '🛒' },

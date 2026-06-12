@@ -636,6 +636,30 @@
   letter-spacing: 0.5px;
 }
 
+/* ============ Travel panel ============ */
+.travel-icon {
+  font-size: 30px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.travel-tag {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.travel-tag-fish {
+  background: rgba(37, 196, 129, 0.18);
+  color: #25c481;
+}
+
+.travel-tag-home {
+  background: rgba(255, 209, 102, 0.18);
+  color: #ffd166;
+}
+
 .section-title {
   font-size: 13px;
   font-weight: 800;
@@ -901,5 +925,26 @@
   .panel-overlay {
     bottom: 84px;
     max-height: 64vh;
+  }
+  .bottom-nav {
+    gap: 4px;
+    padding: 10px 6px 16px;
+  }
+  .nav-button {
+    min-width: 0;
+    flex: 1;
+    padding: 8px 4px;
+  }
+  .nav-label {
+    font-size: 10px;
+  }
+  .nav-icon {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 360px) {
+  .nav-label {
+    display: none;
   }
 }

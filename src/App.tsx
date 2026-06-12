@@ -8,6 +8,7 @@ import FishingPanel from './components/ui/FishingPanel';
 import BuildPanel from './components/ui/BuildPanel';
 import ShopPanel from './components/ui/ShopPanel';
 import InventoryPanel from './components/ui/InventoryPanel';
+import TravelPanel from './components/ui/TravelPanel';
 import { useUIStore } from './store/uiStore';
 import './styles/ui.css';
 
@@ -16,6 +17,7 @@ const PANEL_TITLES: Record<string, string> = {
   build: 'Build & Customize',
   shop: 'Shop',
   inventory: 'Inventory',
+  travel: 'Travel',
 };
 
 function ActivePanel() {
@@ -37,6 +39,7 @@ function ActivePanel() {
         {activePanel === 'build' && <BuildPanel />}
         {activePanel === 'shop' && <ShopPanel />}
         {activePanel === 'inventory' && <InventoryPanel />}
+        {activePanel === 'travel' && <TravelPanel />}
       </div>
     </div>
   );
