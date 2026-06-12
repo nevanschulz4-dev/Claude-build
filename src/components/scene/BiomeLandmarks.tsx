@@ -152,7 +152,44 @@ function PalmTree({ gradientMap }: LandmarkProps) {
   );
 }
 
-/** Palm trees and a beached rowboat along the sandy shore. */
+/** A small cluster of branching coral and an anemone, resting on the seabed. */
+function CoralCluster({ gradientMap }: LandmarkProps) {
+  const branches = useMemo(
+    () => [
+      { x: -0.15, z: 0.1, h: 0.4, color: '#FF7B9C', tilt: -0.15 },
+      { x: 0.1, z: -0.1, h: 0.55, color: '#FF9ED2', tilt: 0.1 },
+      { x: 0.2, z: 0.18, h: 0.3, color: '#FFB36B', tilt: 0.2 },
+    ],
+    [],
+  );
+
+  return (
+    <group>
+      {branches.map((b, i) => (
+        <mesh key={i} position={[b.x, b.h / 2, b.z]} rotation={[0, 0, b.tilt]} castShadow>
+          <coneGeometry args={[0.1, b.h, 6]} />
+          <meshToonMaterial color={b.color} gradientMap={gradientMap} />
+        </mesh>
+      ))}
+      {/* Anemone */}
+      <mesh position={[-0.2, 0.08, -0.15]}>
+        <sphereGeometry args={[0.14, 10, 8]} />
+        <meshToonMaterial color="#C9A8FF" gradientMap={gradientMap} />
+      </mesh>
+      {Array.from({ length: 8 }, (_, i) => {
+        const a = (i / 8) * Math.PI * 2;
+        return (
+          <mesh key={`tendril-${i}`} position={[-0.2 + Math.cos(a) * 0.1, 0.16, -0.15 + Math.sin(a) * 0.1]} rotation={[0, 0, Math.PI]}>
+            <coneGeometry args={[0.025, 0.12, 4]} />
+            <meshToonMaterial color="#E8C8FF" gradientMap={gradientMap} />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
+
+/** Palm trees, a beached rowboat, and underwater coral clusters. */
 function OceanFeatures({ gradientMap }: LandmarkProps) {
   const palms = useMemo(() => {
     const items: { x: number; z: number; scale: number }[] = [];
@@ -160,6 +197,16 @@ function OceanFeatures({ gradientMap }: LandmarkProps) {
       const angle = Math.PI * 0.75 + i * 0.18;
       const r = 6.9 + (i % 2) * 0.6;
       items.push({ x: Math.cos(angle) * r, z: Math.sin(angle) * r, scale: 0.9 + (i % 3) * 0.15 });
+    }
+    return items;
+  }, []);
+
+  const corals = useMemo(() => {
+    const items: { x: number; z: number; scale: number; rotation: number }[] = [];
+    for (let i = 0; i < 5; i++) {
+      const angle = (i / 5) * Math.PI * 2 + 0.6;
+      const r = 1.8 + (i % 3) * 1.0;
+      items.push({ x: Math.cos(angle) * r, z: Math.sin(angle) * r, scale: 0.8 + (i % 3) * 0.25, rotation: i * 1.3 });
     }
     return items;
   }, []);
@@ -182,6 +229,12 @@ function OceanFeatures({ gradientMap }: LandmarkProps) {
           <meshToonMaterial color="#7A4A2B" gradientMap={gradientMap} />
         </mesh>
       </group>
+      {/* Coral reef on the seabed */}
+      {corals.map((c, i) => (
+        <group key={`coral-${i}`} position={[c.x, -0.4, c.z]} scale={c.scale} rotation={[0, c.rotation, 0]}>
+          <CoralCluster gradientMap={gradientMap} />
+        </group>
+      ))}
     </>
   );
 }
