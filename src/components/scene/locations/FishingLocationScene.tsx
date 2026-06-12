@@ -2,6 +2,7 @@ import Environment from '../Environment';
 import Water from '../Water';
 import FishingRig from '../FishingRig';
 import Bubbles from '../Bubbles';
+import Dragonflies from '../Dragonflies';
 import type { BiomeDef, LocationId } from '../../../data/types';
 
 interface FishingLocationSceneProps {
@@ -25,6 +26,7 @@ export default function FishingLocationScene({ biome, biomeId }: FishingLocation
         waveScale={biomeId === 'ocean' ? 1.6 : 1}
       />
       <Bubbles radius={6} />
+      {biomeId !== 'ocean' && <Dragonflies />}
       <FishingRig />
     </>
   );
