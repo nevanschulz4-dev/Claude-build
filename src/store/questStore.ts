@@ -5,7 +5,7 @@ import type { Rarity, LocationId } from '../data/types';
 import { LOCATIONS } from '../data/locationData';
 import { useGameStore } from './gameStore';
 
-export type QuestType = 'catchAny' | 'catchRarity' | 'catchBiome' | 'discoverSpecies' | 'catchValue';
+export type QuestType = 'catchAny' | 'catchRarity' | 'catchBiome' | 'discoverSpecies' | 'catchValue' | 'catchNight';
 
 export interface Quest {
   id: string;
@@ -25,6 +25,7 @@ interface RegisterCatchParams {
   locationId: LocationId;
   value: number;
   isNewSpecies: boolean;
+  isNight: boolean;
 }
 
 interface QuestState {
@@ -131,13 +132,24 @@ function makeQuest(type: QuestType): Quest {
         claimed: false,
       };
     }
+    case 'catchNight':
+      return {
+        id: uid(),
+        type,
+        description: 'Catch a fish at night',
+        icon: '🌙',
+        target: 1,
+        progress: 0,
+        reward: 120,
+        claimed: false,
+      };
     default:
       throw new Error(`Unknown quest type: ${type}`);
   }
 }
 
 function generateDailyQuests(): Quest[] {
-  const types: QuestType[] = ['catchAny', 'catchRarity', 'catchBiome', 'discoverSpecies', 'catchValue'];
+  const types: QuestType[] = ['catchAny', 'catchRarity', 'catchBiome', 'discoverSpecies', 'catchValue', 'catchNight'];
   // Shuffle and take 3 distinct quest types.
   for (let i = types.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -160,7 +172,7 @@ export const useQuestStore = create<QuestState>()(
         }
       },
 
-      registerCatch: ({ rarity, locationId, value, isNewSpecies }) => {
+      registerCatch: ({ rarity, locationId, value, isNewSpecies, isNight }) => {
         const { quests } = get();
         const rarityIdx = RARITY_ORDER.indexOf(rarity);
         const updated = quests.map((q) => {
@@ -181,6 +193,9 @@ export const useQuestStore = create<QuestState>()(
               return q;
             case 'catchValue':
               return { ...q, progress: Math.min(q.target, q.progress + value) };
+            case 'catchNight':
+              if (isNight) return { ...q, progress: q.target };
+              return q;
             default:
               return q;
           }
