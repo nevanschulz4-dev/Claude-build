@@ -30,6 +30,8 @@ export default function BottomNav() {
   const rainCatches = useGameStore((s) => s.rainCatches);
   const decorationsPlaced = useGameStore((s) => s.placedDecorations.length);
   const visitedLocations = useGameStore((s) => s.visitedLocations);
+  const rodsOwned = useGameStore((s) => s.ownedRodIds.length);
+  const waterThemesOwned = useGameStore((s) => s.ownedWaterThemeIds.length);
   const questsClaimed = useQuestStore((s) => s.totalClaimed);
   const claimedAchievementIds = useAchievementStore((s) => s.claimedIds);
 
@@ -43,6 +45,8 @@ export default function BottomNav() {
     decorationsPlaced,
     fishableLocationsVisited: visitedLocations.filter((id) => id !== 'home').length,
     questsClaimed,
+    rodsOwned,
+    waterThemesOwned,
   };
   const claimableAchievements = ACHIEVEMENTS.filter(
     (a) => !claimedAchievementIds.includes(a.id) && a.progress(ctx) >= a.target,

@@ -10,6 +10,8 @@ export interface AchievementContext {
   decorationsPlaced: number;
   fishableLocationsVisited: number;
   questsClaimed: number;
+  rodsOwned: number;
+  waterThemesOwned: number;
 }
 
 export interface AchievementDef {
@@ -175,5 +177,32 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     reward: 300,
     target: 10,
     progress: (ctx) => ctx.questsClaimed,
+  },
+  {
+    id: 'master-decorator',
+    name: 'Master Decorator',
+    description: 'Place 15 decorations around your pond',
+    icon: '🏡',
+    reward: 600,
+    target: 15,
+    progress: (ctx) => ctx.decorationsPlaced,
+  },
+  {
+    id: 'tackle-collector',
+    name: 'Tackle Collector',
+    description: 'Own every fishing rod upgrade',
+    icon: '🪝',
+    reward: 800,
+    target: 5,
+    progress: (ctx) => ctx.rodsOwned,
+  },
+  {
+    id: 'water-connoisseur',
+    name: 'Water Connoisseur',
+    description: 'Unlock every water theme',
+    icon: '🎨',
+    reward: 500,
+    target: 5,
+    progress: (ctx) => ctx.waterThemesOwned,
   },
 ];
