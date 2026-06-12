@@ -2,6 +2,7 @@ import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useToonGradient } from '../../utils/textures';
+import { playSplash } from '../../utils/audio';
 
 const SHELL_COLOR = '#4F7942';
 const SKIN_COLOR = '#8FBF6B';
@@ -25,6 +26,8 @@ export default function Turtle({ pondRadius = 6 }: { pondRadius?: number }) {
     [pondRadius],
   );
 
+  const wasSurfacing = useRef(false);
+
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
     const a = t * path.speed + path.phase;
@@ -32,6 +35,11 @@ export default function Turtle({ pondRadius = 6 }: { pondRadius?: number }) {
     const surfaceCycle = (t * 0.04) % 1;
     const surfacing = surfaceCycle > 0.85 ? Math.sin(((surfaceCycle - 0.85) / 0.15) * Math.PI) : 0;
     const depth = -0.18 + surfacing * 0.16;
+
+    if (surfacing > 0.05 && !wasSurfacing.current) {
+      playSplash();
+    }
+    wasSurfacing.current = surfacing > 0.05;
 
     if (groupRef.current) {
       groupRef.current.position.set(Math.cos(a) * path.radius, depth, Math.sin(a) * path.radius);
