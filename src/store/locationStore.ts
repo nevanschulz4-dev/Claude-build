@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { LocationId } from '../data/types';
+import { useGameStore } from './gameStore';
 
 interface LocationState {
   currentLocationId: LocationId;
@@ -8,5 +9,8 @@ interface LocationState {
 
 export const useLocationStore = create<LocationState>((set) => ({
   currentLocationId: 'home',
-  setLocation: (id) => set({ currentLocationId: id }),
+  setLocation: (id) => {
+    useGameStore.getState().visitLocation(id);
+    set({ currentLocationId: id });
+  },
 }));

@@ -1,10 +1,19 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { CaughtFish, PlacedDecoration } from '../data/types';
+import type { CaughtFish, PlacedDecoration, LocationId, Rarity } from '../data/types';
 import { DECOR_BY_ID } from '../data/decorData';
 import { FISH_BY_ID } from '../data/fishData';
+import { useEnvironmentStore } from './environmentStore';
 
 export const MAX_INVENTORY = 16;
+
+const EMPTY_RARITY_COUNTS: Record<Rarity, number> = {
+  common: 0,
+  uncommon: 0,
+  rare: 0,
+  epic: 0,
+  legendary: 0,
+};
 
 interface GameState {
   money: number;
@@ -19,6 +28,10 @@ interface GameState {
   totalCatches: number;
   totalEarned: number;
   soundEnabled: boolean;
+  rarityCatchCounts: Record<Rarity, number>;
+  nightCatches: number;
+  rainCatches: number;
+  visitedLocations: LocationId[];
 
   // actions
   addMoney: (amount: number) => void;
@@ -33,6 +46,7 @@ interface GameState {
   buyRod: (id: string, cost: number) => boolean;
   pondRating: () => number;
   toggleSound: () => void;
+  visitLocation: (id: LocationId) => void;
 }
 
 export const useGameStore = create<GameState>()(
@@ -50,6 +64,10 @@ export const useGameStore = create<GameState>()(
       totalCatches: 0,
       totalEarned: 0,
       soundEnabled: true,
+      rarityCatchCounts: { ...EMPTY_RARITY_COUNTS },
+      nightCatches: 0,
+      rainCatches: 0,
+      visitedLocations: ['home'],
 
       addMoney: (amount) => set((s) => ({ money: s.money + amount, totalEarned: s.totalEarned + Math.max(0, amount) })),
 
@@ -61,7 +79,7 @@ export const useGameStore = create<GameState>()(
       },
 
       addCatch: (fish) => {
-        const { inventory, caughtSpeciesIds } = get();
+        const { inventory, caughtSpeciesIds, rarityCatchCounts } = get();
         if (inventory.length >= MAX_INVENTORY) return false;
         const entry: CaughtFish = {
           ...fish,
@@ -71,10 +89,23 @@ export const useGameStore = create<GameState>()(
         const nextCaughtSpeciesIds = caughtSpeciesIds.includes(fish.speciesId)
           ? caughtSpeciesIds
           : [...caughtSpeciesIds, fish.speciesId];
+
+        const rarity = FISH_BY_ID[fish.speciesId]?.rarity;
+        const nextRarityCounts = rarity
+          ? { ...rarityCatchCounts, [rarity]: rarityCatchCounts[rarity] + 1 }
+          : rarityCatchCounts;
+
+        const env = useEnvironmentStore.getState();
+        const nightCatches = get().nightCatches + (env.isNight() ? 1 : 0);
+        const rainCatches = get().rainCatches + (env.weather === 'rain' ? 1 : 0);
+
         set({
           inventory: [...inventory, entry],
           totalCatches: get().totalCatches + 1,
           caughtSpeciesIds: nextCaughtSpeciesIds,
+          rarityCatchCounts: nextRarityCounts,
+          nightCatches,
+          rainCatches,
         });
         return true;
       },
@@ -156,6 +187,12 @@ export const useGameStore = create<GameState>()(
       },
 
       toggleSound: () => set((s) => ({ soundEnabled: !s.soundEnabled })),
+
+      visitLocation: (id) => {
+        const { visitedLocations } = get();
+        if (visitedLocations.includes(id)) return;
+        set({ visitedLocations: [...visitedLocations, id] });
+      },
     }),
     {
       name: 'pond-game-save',

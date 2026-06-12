@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useEnvironmentStore, getDayFactor } from '../../store/environmentStore';
 
 const VERTEX_SHADER = /* glsl */ `
   uniform float uTime;
@@ -52,6 +53,8 @@ const FRAGMENT_SHADER = /* glsl */ `
   uniform vec3 uSunDir;
   uniform vec3 uCameraPos;
   uniform float uTime;
+  uniform float uNight;
+  uniform float uRain;
 
   varying vec3 vWorldPos;
   varying vec3 vNormalW;
@@ -69,13 +72,18 @@ const FRAGMENT_SHADER = /* glsl */ `
 
     vec3 sunDir = normalize(uSunDir);
     vec3 halfV = normalize(viewDir + sunDir);
-    float spec = pow(max(dot(normal, halfV), 0.0), 60.0);
+    float spec = pow(max(dot(normal, halfV), 0.0), 60.0) * (1.0 - uNight * 0.85) * (1.0 - uRain * 0.6);
 
     float foamMask = smoothstep(0.09, 0.16, vElevation);
 
     vec3 color = mix(base, uFoam, fresnel * 0.45);
     color = mix(color, uFoam, foamMask * 0.6);
     color += vec3(1.0, 0.97, 0.85) * spec * 0.9;
+
+    // Cool, dim the water at night and dull it under rain.
+    vec3 nightTint = vec3(0.05, 0.08, 0.16);
+    color = mix(color, color * 0.35 + nightTint, uNight * 0.75);
+    color = mix(color, color * 0.8, uRain * 0.35);
 
     gl_FragColor = vec4(color, 0.92);
   }
@@ -106,6 +114,8 @@ export default function Water({ radius = 6, shallow, deep, foam, flowing = false
       uFoam: { value: new THREE.Color(foam) },
       uSunDir: { value: new THREE.Vector3(0.4, 0.6, 0.8) },
       uCameraPos: { value: new THREE.Vector3() },
+      uNight: { value: 0 },
+      uRain: { value: 0 },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
@@ -120,6 +130,13 @@ export default function Water({ radius = 6, shallow, deep, foam, flowing = false
     materialRef.current.uniforms.uFoam.value.set(foam);
     materialRef.current.uniforms.uFlow.value = flowing ? 1 : 0;
     materialRef.current.uniforms.uWaveScale.value = waveScale;
+
+    const { timeOfDay, weather } = useEnvironmentStore.getState();
+    const dayFactor = getDayFactor(timeOfDay);
+    const sunAngle = (timeOfDay - 0.25) * Math.PI * 2;
+    materialRef.current.uniforms.uSunDir.value.set(Math.cos(sunAngle), Math.max(0.2, Math.sin(sunAngle)), 0.6).normalize();
+    materialRef.current.uniforms.uNight.value = Math.max(0, -dayFactor);
+    materialRef.current.uniforms.uRain.value = weather === 'rain' ? 1 : 0;
   });
 
   return (

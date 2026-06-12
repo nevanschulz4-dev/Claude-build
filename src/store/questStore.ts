@@ -30,6 +30,7 @@ interface RegisterCatchParams {
 interface QuestState {
   date: string;
   quests: Quest[];
+  totalClaimed: number;
   ensureDaily: () => void;
   registerCatch: (params: RegisterCatchParams) => void;
   claimReward: (questId: string) => boolean;
@@ -150,6 +151,7 @@ export const useQuestStore = create<QuestState>()(
     (set, get) => ({
       date: '',
       quests: [],
+      totalClaimed: 0,
 
       ensureDaily: () => {
         const today = todayKey();
@@ -191,7 +193,10 @@ export const useQuestStore = create<QuestState>()(
         const quest = quests.find((q) => q.id === questId);
         if (!quest || quest.claimed || quest.progress < quest.target) return false;
         useGameStore.getState().addMoney(quest.reward);
-        set({ quests: quests.map((q) => (q.id === questId ? { ...q, claimed: true } : q)) });
+        set({
+          quests: quests.map((q) => (q.id === questId ? { ...q, claimed: true } : q)),
+          totalClaimed: get().totalClaimed + 1,
+        });
         return true;
       },
     }),
