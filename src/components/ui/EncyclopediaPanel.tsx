@@ -24,6 +24,7 @@ export default function EncyclopediaPanel() {
   const [tab, setTab] = useState<FilterTab>('all');
   const unlockedFishIds = useGameStore((s) => s.unlockedFishIds);
   const caughtSpeciesIds = useGameStore((s) => s.caughtSpeciesIds);
+  const bestCatchWeights = useGameStore((s) => s.bestCatchWeights);
 
   const species = tab === 'all' ? FISH_SPECIES : FISH_SPECIES.filter((f) => f.rarity === tab);
 
@@ -79,6 +80,9 @@ export default function EncyclopediaPanel() {
                     </span>
                   ))}
                 </div>
+              )}
+              {caught && bestCatchWeights[sp.id] != null && (
+                <p className="item-desc">🏆 Personal best: {bestCatchWeights[sp.id]} kg</p>
               )}
               <div className="item-footer">
                 <span className="item-cost">{caught ? `💰 ~$${sp.baseValue}` : ' '}</span>

@@ -36,6 +36,7 @@ interface GameState {
   rarityCatchCounts: Record<Rarity, number>;
   nightCatches: number;
   rainCatches: number;
+  bestCatchWeights: Record<string, number>;
   visitedLocations: LocationId[];
   ownedBait: Record<string, number>;
   activeBaitId: string | null;
@@ -79,6 +80,7 @@ export const useGameStore = create<GameState>()(
       rarityCatchCounts: { ...EMPTY_RARITY_COUNTS },
       nightCatches: 0,
       rainCatches: 0,
+      bestCatchWeights: {},
       visitedLocations: ['home'],
       ownedBait: {},
       activeBaitId: null,
@@ -114,6 +116,11 @@ export const useGameStore = create<GameState>()(
         const nightCatches = get().nightCatches + (env.isNight() ? 1 : 0);
         const rainCatches = get().rainCatches + (env.weather === 'rain' ? 1 : 0);
 
+        const bestCatchWeights = get().bestCatchWeights;
+        const prevBest = bestCatchWeights[fish.speciesId] ?? 0;
+        const nextBestCatchWeights =
+          fish.weight > prevBest ? { ...bestCatchWeights, [fish.speciesId]: fish.weight } : bestCatchWeights;
+
         set({
           inventory: [...inventory, entry],
           totalCatches: get().totalCatches + 1,
@@ -121,6 +128,7 @@ export const useGameStore = create<GameState>()(
           rarityCatchCounts: nextRarityCounts,
           nightCatches,
           rainCatches,
+          bestCatchWeights: nextBestCatchWeights,
         });
         return true;
       },
