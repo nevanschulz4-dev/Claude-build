@@ -8,6 +8,7 @@ import PondFishLayer from '../PondFishLayer';
 import Bubbles from '../Bubbles';
 import Dragonflies from '../Dragonflies';
 import AmbientMinnows from '../AmbientMinnows';
+import FloatingLeaves from '../FloatingLeaves';
 
 /** The player's home pond: decorative, non-fishable, shows unlocked fish swimming. */
 export default function HomeScene() {
@@ -21,6 +22,7 @@ export default function HomeScene() {
       <Bubbles radius={6} />
       <Dragonflies />
       <AmbientMinnows />
+      <FloatingLeaves radius={6} />
       <PondFishLayer />
       <DecorationsLayer />
       <PlacementController />
