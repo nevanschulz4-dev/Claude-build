@@ -4,6 +4,7 @@ import { Sky, Stars } from '@react-three/drei';
 import { useToonGradient, useGrassTexture, useSandTexture, useMudTexture } from '../../utils/textures';
 import type { EnvironmentTheme, LocationId } from '../../data/types';
 import BiomeLandmarks from './BiomeLandmarks';
+import Birds from './Birds';
 import Rain from './Rain';
 import { useEnvironmentStore, getDayFactor } from '../../store/environmentStore';
 import * as THREE from 'three';
@@ -190,6 +191,9 @@ export default function Environment({
 
       {/* Falling rain */}
       {isRaining && <Rain />}
+
+      {/* Birds glide across the daytime sky */}
+      {!isNight && !isRaining && <Birds />}
 
       {/* Lighting */}
       <ambientLight intensity={ambientIntensity} color={ambientCol} />
