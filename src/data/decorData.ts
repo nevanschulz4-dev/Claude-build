@@ -154,6 +154,15 @@ export const DECORATIONS: DecorationDef[] = [
     footprint: 0.5,
     description: 'A cheerful little gnome to guard your pond.',
   },
+  {
+    id: 'birdhouse',
+    name: 'Birdhouse',
+    category: 'fun',
+    cost: 95,
+    ratingValue: 6,
+    footprint: 0.5,
+    description: 'A cozy little house that draws birds to your pond.',
+  },
 ];
 
 export const DECOR_BY_ID: Record<string, DecorationDef> = Object.fromEntries(

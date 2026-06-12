@@ -100,6 +100,36 @@ export function UmbrellaModel({ preview = false, valid = true }: DecorationModel
   );
 }
 
+/** Birdhouse on a post, with a peaked roof, round entrance, and perch. */
+export function BirdhouseModel({ preview = false, valid = true }: DecorationModelProps) {
+  const { mat } = useDecorMaterials(preview, valid);
+
+  return (
+    <group>
+      {/* Post */}
+      <mesh position={[0, 0.35, 0]} material={mat('#8B5E34')} castShadow>
+        <cylinderGeometry args={[0.04, 0.05, 0.7, 8]} />
+      </mesh>
+      {/* House body */}
+      <mesh position={[0, 0.78, 0]} material={mat('#E8A24C')} castShadow>
+        <boxGeometry args={[0.34, 0.3, 0.32]} />
+      </mesh>
+      {/* Roof */}
+      <mesh position={[0, 0.99, 0]} rotation={[0, Math.PI / 4, 0]} material={mat('#B5482E')} castShadow>
+        <coneGeometry args={[0.28, 0.24, 4]} />
+      </mesh>
+      {/* Entrance hole */}
+      <mesh position={[0, 0.8, 0.161]} material={mat('#3A2A1A')}>
+        <circleGeometry args={[0.05, 12]} />
+      </mesh>
+      {/* Perch */}
+      <mesh position={[0, 0.7, 0.18]} rotation={[Math.PI / 2, 0, 0]} material={mat('#7A4A2B')} castShadow>
+        <cylinderGeometry args={[0.012, 0.012, 0.12, 6]} />
+      </mesh>
+    </group>
+  );
+}
+
 /** Garden gnome: classic pointed hat, round body, white beard. */
 export function GnomeModel({ preview = false, valid = true }: DecorationModelProps) {
   const { mat } = useDecorMaterials(preview, valid);
