@@ -12,6 +12,7 @@ export interface AchievementContext {
   questsClaimed: number;
   rodsOwned: number;
   waterThemesOwned: number;
+  heaviestCatch: number;
 }
 
 export interface AchievementDef {
@@ -204,5 +205,14 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     reward: 500,
     target: 5,
     progress: (ctx) => ctx.waterThemesOwned,
+  },
+  {
+    id: 'heavyweight',
+    name: 'Heavyweight Catch',
+    description: 'Reel in a fish weighing 5 kg or more',
+    icon: '🏋️',
+    reward: 350,
+    target: 5,
+    progress: (ctx) => Math.min(5, ctx.heaviestCatch),
   },
 ];

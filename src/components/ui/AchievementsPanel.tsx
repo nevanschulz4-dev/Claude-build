@@ -17,6 +17,7 @@ export default function AchievementsPanel() {
   const visitedLocations = useGameStore((s) => s.visitedLocations);
   const rodsOwned = useGameStore((s) => s.ownedRodIds.length);
   const waterThemesOwned = useGameStore((s) => s.ownedWaterThemeIds.length);
+  const heaviestCatch = useGameStore((s) => Math.max(0, ...Object.values(s.bestCatchWeights)));
   const questsClaimed = useQuestStore((s) => s.totalClaimed);
   const claimedIds = useAchievementStore((s) => s.claimedIds);
   const claim = useAchievementStore((s) => s.claim);
@@ -34,6 +35,7 @@ export default function AchievementsPanel() {
     questsClaimed,
     rodsOwned,
     waterThemesOwned,
+    heaviestCatch,
   };
 
   const claimedCount = ACHIEVEMENTS.filter((a) => claimedIds.includes(a.id)).length;
