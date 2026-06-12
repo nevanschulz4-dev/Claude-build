@@ -38,7 +38,6 @@ export function useDecorMaterials(preview: boolean, valid: boolean) {
         params.depthWrite = false;
       }
       return new THREE.MeshToonMaterial(params);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     };
   }, [gradientMap, tint, preview]);
 

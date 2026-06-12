@@ -87,6 +87,7 @@ interface WaterProps {
 export default function Water({ radius = 6, shallow, deep, foam }: WaterProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
+  // Created once; color values are updated in place via useFrame below.
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
@@ -96,6 +97,7 @@ export default function Water({ radius = 6, shallow, deep, foam }: WaterProps) {
       uSunDir: { value: new THREE.Vector3(0.4, 0.6, 0.8) },
       uCameraPos: { value: new THREE.Vector3() },
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 

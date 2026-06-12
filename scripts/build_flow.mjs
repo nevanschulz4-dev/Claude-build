@@ -27,10 +27,11 @@ await page.waitForTimeout(300);
 await page.screenshot({ path: '/tmp/build_2_selected.png' });
 
 // Move mouse over the canvas to a spot on the grass, then click to place
+// (pick a point in the upper-right area, away from the bottom build panel overlay)
 const canvas = await page.$('canvas');
 const box = await canvas.boundingBox();
-const x = box.x + box.width * 0.65;
-const y = box.y + box.height * 0.55;
+const x = box.x + box.width * 0.78;
+const y = box.y + box.height * 0.3;
 
 await page.mouse.move(x, y);
 await page.waitForTimeout(400);
@@ -45,8 +46,8 @@ await page.waitForTimeout(800);
 await page.screenshot({ path: '/tmp/build_4_placed.png' });
 
 // Place a second one nearby to confirm multi-placement works
-const x2 = box.x + box.width * 0.7;
-const y2 = box.y + box.height * 0.6;
+const x2 = box.x + box.width * 0.85;
+const y2 = box.y + box.height * 0.35;
 await page.mouse.move(x2, y2);
 await page.waitForTimeout(300);
 await page.mouse.click(x2, y2);

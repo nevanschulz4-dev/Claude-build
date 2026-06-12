@@ -23,7 +23,7 @@ export default function FishingRig() {
     const { phase, castTimer, biteWindowTimer, biteWindowMax, reelMarker, reelProgress } = useFishingStore.getState();
     const t = state.clock.getElapsedTime();
 
-    let target = currentBobberPos.current;
+    const target = currentBobberPos.current;
     switch (phase) {
       case 'idle':
         target.copy(BOBBER_HIDDEN);

@@ -25,10 +25,12 @@ export default function PlacementController() {
   const [rotation, setRotation] = useState(0);
   const planeRef = useRef<THREE.Mesh>(null);
 
-  // Reset rotation when selection changes
-  useEffect(() => {
+  // Reset rotation when selection changes (adjust state during render, no effect needed)
+  const [prevSelection, setPrevSelection] = useState(buildSelection);
+  if (buildSelection !== prevSelection) {
+    setPrevSelection(buildSelection);
     setRotation(0);
-  }, [buildSelection]);
+  }
 
   // 'R' key rotates the ghost preview by 45 degrees
   useEffect(() => {
