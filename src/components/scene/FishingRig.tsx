@@ -92,24 +92,97 @@ export default function FishingRig() {
     <group>
       {/* Player character */}
       <group position={PLAYER_POS} rotation={[0, Math.PI, 0]}>
-        {/* Body */}
-        <mesh position={[0, 0.9, 0]} castShadow>
-          <capsuleGeometry args={[0.32, 0.9, 4, 8]} />
-          <meshToonMaterial color="#3B6FA0" gradientMap={gradientMap} />
+        {/* Boots */}
+        <mesh position={[-0.15, 0.15, 0.02]} castShadow>
+          <cylinderGeometry args={[0.13, 0.16, 0.3, 8]} />
+          <meshToonMaterial color="#3E2C1E" gradientMap={gradientMap} />
         </mesh>
-        {/* Head */}
-        <mesh position={[0, 1.75, 0]} castShadow>
-          <sphereGeometry args={[0.28, 16, 16]} />
+        <mesh position={[0.15, 0.15, 0.02]} castShadow>
+          <cylinderGeometry args={[0.13, 0.16, 0.3, 8]} />
+          <meshToonMaterial color="#3E2C1E" gradientMap={gradientMap} />
+        </mesh>
+
+        {/* Waders */}
+        <mesh position={[-0.15, 0.6, 0]} castShadow>
+          <capsuleGeometry args={[0.155, 0.45, 4, 8]} />
+          <meshToonMaterial color="#7A8B6F" gradientMap={gradientMap} />
+        </mesh>
+        <mesh position={[0.15, 0.6, 0]} castShadow>
+          <capsuleGeometry args={[0.155, 0.45, 4, 8]} />
+          <meshToonMaterial color="#7A8B6F" gradientMap={gradientMap} />
+        </mesh>
+
+        {/* Torso (shirt) */}
+        <mesh position={[0, 1.28, 0]} castShadow>
+          <capsuleGeometry args={[0.32, 0.55, 4, 8]} />
+          <meshToonMaterial color="#C9B896" gradientMap={gradientMap} />
+        </mesh>
+
+        {/* Fishing vest */}
+        <mesh position={[0, 1.3, 0.05]} castShadow>
+          <boxGeometry args={[0.58, 0.6, 0.46]} />
+          <meshToonMaterial color="#52704C" gradientMap={gradientMap} />
+        </mesh>
+        <mesh position={[-0.16, 1.16, 0.3]} castShadow>
+          <boxGeometry args={[0.18, 0.14, 0.05]} />
+          <meshToonMaterial color="#3C5638" gradientMap={gradientMap} />
+        </mesh>
+        <mesh position={[0.16, 1.16, 0.3]} castShadow>
+          <boxGeometry args={[0.18, 0.14, 0.05]} />
+          <meshToonMaterial color="#3C5638" gradientMap={gradientMap} />
+        </mesh>
+
+        {/* Belt */}
+        <mesh position={[0, 0.97, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+          <torusGeometry args={[0.33, 0.035, 8, 16]} />
+          <meshToonMaterial color="#5C4326" gradientMap={gradientMap} />
+        </mesh>
+
+        {/* Neck */}
+        <mesh position={[0, 1.64, 0]} castShadow>
+          <cylinderGeometry args={[0.12, 0.13, 0.1, 8]} />
           <meshToonMaterial color="#F0C29B" gradientMap={gradientMap} />
         </mesh>
-        {/* Hat */}
-        <mesh position={[0, 1.95, 0]} castShadow>
-          <coneGeometry args={[0.34, 0.32, 12]} />
-          <meshToonMaterial color="#E0533D" gradientMap={gradientMap} />
+
+        {/* Head */}
+        <mesh position={[0, 1.84, 0]} castShadow>
+          <sphereGeometry args={[0.26, 16, 16]} />
+          <meshToonMaterial color="#F0C29B" gradientMap={gradientMap} />
         </mesh>
-        {/* Arm holding rod */}
+
+        {/* Hat brim */}
+        <mesh position={[0, 1.97, 0]} castShadow>
+          <cylinderGeometry args={[0.44, 0.44, 0.04, 16]} />
+          <meshToonMaterial color="#8A6A3D" gradientMap={gradientMap} />
+        </mesh>
+        {/* Hat band */}
+        <mesh position={[0, 2.0, 0]} castShadow>
+          <cylinderGeometry args={[0.3, 0.3, 0.04, 16]} />
+          <meshToonMaterial color="#5C4326" gradientMap={gradientMap} />
+        </mesh>
+        {/* Hat crown */}
+        <mesh position={[0, 2.1, 0]} castShadow>
+          <cylinderGeometry args={[0.27, 0.3, 0.18, 16]} />
+          <meshToonMaterial color="#8A6A3D" gradientMap={gradientMap} />
+        </mesh>
+
+        {/* Left arm (resting at side) */}
+        <mesh position={[-0.34, 1.25, 0.05]} rotation={[0.15, 0, 0.1]} castShadow>
+          <capsuleGeometry args={[0.1, 0.5, 4, 8]} />
+          <meshToonMaterial color="#C9B896" gradientMap={gradientMap} />
+        </mesh>
+        <mesh position={[-0.37, 0.78, 0.1]} castShadow>
+          <sphereGeometry args={[0.09, 12, 12]} />
+          <meshToonMaterial color="#F0C29B" gradientMap={gradientMap} />
+        </mesh>
+
+        {/* Right arm holding rod */}
         <mesh position={[0.35, 1.35, -0.15]} rotation={[0.6, 0, 0.3]} castShadow>
           <capsuleGeometry args={[0.1, 0.55, 4, 8]} />
+          <meshToonMaterial color="#C9B896" gradientMap={gradientMap} />
+        </mesh>
+        <mesh position={[0.46, 1.6, -0.35]} castShadow>
+          <sphereGeometry args={[0.1, 12, 12]} />
           <meshToonMaterial color="#F0C29B" gradientMap={gradientMap} />
         </mesh>
 
@@ -118,6 +191,11 @@ export default function FishingRig() {
           <mesh position={[0, 1.2, 0]} castShadow>
             <cylinderGeometry args={[0.025, 0.05, 2.4, 6]} />
             <meshToonMaterial color="#7A4A2B" gradientMap={gradientMap} />
+          </mesh>
+          {/* Reel */}
+          <mesh position={[0, 0.05, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+            <cylinderGeometry args={[0.08, 0.08, 0.06, 12]} />
+            <meshToonMaterial color="#3A3A3A" gradientMap={gradientMap} />
           </mesh>
         </group>
       </group>

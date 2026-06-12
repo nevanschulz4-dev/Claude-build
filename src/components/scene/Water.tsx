@@ -4,6 +4,8 @@ import * as THREE from 'three';
 
 const VERTEX_SHADER = /* glsl */ `
   uniform float uTime;
+  uniform float uFlow;
+  uniform float uWaveScale;
   varying vec3 vWorldPos;
   varying vec3 vNormalW;
   varying float vElevation;
@@ -15,6 +17,8 @@ const VERTEX_SHADER = /* glsl */ `
     h += sin(p.y * 0.8 + t * 1.6) * 0.07;
     h += sin((p.x + p.y) * 0.35 + t * 0.8) * 0.09;
     h += sin((p.x - p.y) * 0.9 + t * 2.0) * 0.03;
+    // Directional current ripples for flowing rivers.
+    h += uFlow * (sin(p.x * 1.2 - t * 2.6) * 0.06 + sin(p.x * 0.6 - t * 1.8) * 0.04);
     return h;
   }
 
@@ -25,12 +29,12 @@ const VERTEX_SHADER = /* glsl */ `
     float hx = wave(pos.xy + vec2(e, 0.0), uTime);
     float hy = wave(pos.xy + vec2(0.0, e), uTime);
 
-    pos.z = h * 0.35;
-    vElevation = h;
+    pos.z = h * 0.35 * uWaveScale;
+    vElevation = h * uWaveScale;
     vLocalRadius = length(position.xy);
 
-    vec3 tangentX = normalize(vec3(e, 0.0, (hx - h) * 0.35));
-    vec3 tangentY = normalize(vec3(0.0, e, (hy - h) * 0.35));
+    vec3 tangentX = normalize(vec3(e, 0.0, (hx - h) * 0.35 * uWaveScale));
+    vec3 tangentY = normalize(vec3(0.0, e, (hy - h) * 0.35 * uWaveScale));
     vec3 n = normalize(cross(tangentX, tangentY));
 
     vec4 worldPos = modelMatrix * vec4(pos, 1.0);
@@ -82,15 +86,21 @@ interface WaterProps {
   shallow: string;
   deep: string;
   foam: string;
+  /** Adds a directional current ripple, for rivers. */
+  flowing?: boolean;
+  /** Multiplier on wave amplitude (e.g. larger for choppy ocean water). */
+  waveScale?: number;
 }
 
-export default function Water({ radius = 6, shallow, deep, foam }: WaterProps) {
+export default function Water({ radius = 6, shallow, deep, foam, flowing = false, waveScale = 1 }: WaterProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
   // Created once; color values are updated in place via useFrame below.
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
+      uFlow: { value: flowing ? 1 : 0 },
+      uWaveScale: { value: waveScale },
       uShallow: { value: new THREE.Color(shallow) },
       uDeep: { value: new THREE.Color(deep) },
       uFoam: { value: new THREE.Color(foam) },
@@ -108,6 +118,8 @@ export default function Water({ radius = 6, shallow, deep, foam }: WaterProps) {
     materialRef.current.uniforms.uShallow.value.set(shallow);
     materialRef.current.uniforms.uDeep.value.set(deep);
     materialRef.current.uniforms.uFoam.value.set(foam);
+    materialRef.current.uniforms.uFlow.value = flowing ? 1 : 0;
+    materialRef.current.uniforms.uWaveScale.value = waveScale;
   });
 
   return (

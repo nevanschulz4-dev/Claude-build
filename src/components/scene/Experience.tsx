@@ -14,7 +14,7 @@ export default function Experience() {
       {currentLocationId === 'home' ? (
         <HomeScene />
       ) : (
-        <FishingLocationScene biome={BIOMES[currentLocationId]} />
+        <FishingLocationScene biome={BIOMES[currentLocationId]} biomeId={currentLocationId} />
       )}
 
       <ContactShadows position={[0, 0.01, 0]} opacity={0.35} scale={20} blur={2} far={4} />

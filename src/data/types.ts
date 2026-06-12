@@ -22,6 +22,21 @@ export const RARITY_GLOW: Record<Rarity, string> = {
 
 export type FishBodyShape = 'classic' | 'round' | 'long' | 'wide' | 'eel';
 
+/** Distinct swim motion used to animate a species in the pond */
+export type SwimPattern = 'orbit' | 'hover' | 'dart' | 'figure8' | 'serpentine' | 'glide';
+
+/** Extra decorative geometry that makes a species visually distinct */
+export type FishFeature =
+  | 'whiskers'
+  | 'stripes'
+  | 'glass'
+  | 'doubletail'
+  | 'rings'
+  | 'segments'
+  | 'crystals'
+  | 'wings'
+  | 'blowhole';
+
 export interface FishSpecies {
   id: string;
   name: string;
@@ -34,6 +49,10 @@ export interface FishSpecies {
   secondaryColor: string;
   finColor: string;
   glow?: boolean;
+  /** Movement pattern used while swimming in the pond */
+  swimPattern: SwimPattern;
+  /** Extra geometry that gives the species a unique silhouette */
+  feature?: FishFeature;
   /** Cost to unlock/stock this species in the shop. 0 = available from the start */
   unlockCost: number;
   description: string;

@@ -1,20 +1,28 @@
 import Environment from '../Environment';
 import Water from '../Water';
 import FishingRig from '../FishingRig';
-import type { BiomeDef } from '../../../data/types';
+import type { BiomeDef, LocationId } from '../../../data/types';
 
 interface FishingLocationSceneProps {
   biome: BiomeDef;
+  biomeId: Exclude<LocationId, 'home'>;
 }
 
 /** A fishable outdoor location themed by its biome definition. */
-export default function FishingLocationScene({ biome }: FishingLocationSceneProps) {
+export default function FishingLocationScene({ biome, biomeId }: FishingLocationSceneProps) {
   const { water, ...theme } = biome;
 
   return (
     <>
-      <Environment {...theme} />
-      <Water radius={6} shallow={water.shallow} deep={water.deep} foam={water.foam} />
+      <Environment {...theme} biomeId={biomeId} />
+      <Water
+        radius={6}
+        shallow={water.shallow}
+        deep={water.deep}
+        foam={water.foam}
+        flowing={biomeId === 'river'}
+        waveScale={biomeId === 'ocean' ? 1.6 : 1}
+      />
       <FishingRig />
     </>
   );

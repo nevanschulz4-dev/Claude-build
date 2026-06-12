@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { Sky } from '@react-three/drei';
 import { useToonGradient, useGrassTexture, useSandTexture, useMudTexture } from '../../utils/textures';
-import type { EnvironmentTheme } from '../../data/types';
+import type { EnvironmentTheme, LocationId } from '../../data/types';
+import BiomeLandmarks from './BiomeLandmarks';
 import * as THREE from 'three';
 
 interface TreeProps {
@@ -43,6 +44,11 @@ function Hill({ position, scale, color, gradientMap }: { position: [number, numb
 const LEAF_COLORS = ['#3FA34D', '#52B768', '#2E8B4E', '#6BC36F'];
 const HILL_COLORS = ['#5CA85C', '#4F9B5E'];
 
+interface EnvironmentProps extends EnvironmentTheme {
+  /** The current fishing biome, used to render distinctive landmarks. */
+  biomeId?: Exclude<LocationId, 'home'>;
+}
+
 export default function Environment({
   groundTexture = 'grass',
   groundTint,
@@ -58,7 +64,8 @@ export default function Environment({
   hemisphereGround = '#7bc47f',
   treeLeafColors = LEAF_COLORS,
   hillColors = HILL_COLORS,
-}: EnvironmentTheme) {
+  biomeId,
+}: EnvironmentProps) {
   const gradientMap = useToonGradient(4);
   const grassTexture = useGrassTexture();
   const sandTexture = useSandTexture();
@@ -105,6 +112,9 @@ export default function Environment({
       {/* Sky + sun */}
       <Sky distance={450000} sunPosition={sunPosition} turbidity={skyTurbidity} rayleigh={skyRayleigh} mieCoefficient={mieCoefficient} mieDirectionalG={mieDirectionalG} />
 
+      {/* Murky haze for the swamp */}
+      {biomeId === 'swamp' && <fog attach="fog" args={['#9aa88c', 10, 42]} />}
+
       {/* Lighting */}
       <ambientLight intensity={0.55} color={ambientColor} />
       <hemisphereLight args={[hemisphereSky, hemisphereGround, 0.6]} />
@@ -143,6 +153,9 @@ export default function Environment({
       {trees.map((t, i) => (
         <Tree key={`tree-${i}`} position={t.position} scale={t.scale} leafColor={t.leafColor} trunkColor="#8B5E34" gradientMap={gradientMap} />
       ))}
+
+      {/* Biome-specific landmarks */}
+      {biomeId && <BiomeLandmarks biomeId={biomeId} gradientMap={gradientMap} />}
     </>
   );
 }

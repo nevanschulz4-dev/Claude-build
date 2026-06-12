@@ -28,9 +28,17 @@ export default function FishModel({ species, swimming = false, phase = 0 }: Fish
   const bodyScale = BODY_SCALE[species.bodyShape];
   const s = species.size;
 
+  const isGlass = species.feature === 'glass';
+
   const bodyMat = useMemo(
-    () => new THREE.MeshToonMaterial({ color: species.primaryColor, gradientMap }),
-    [species.primaryColor, gradientMap],
+    () =>
+      new THREE.MeshToonMaterial({
+        color: species.primaryColor,
+        gradientMap,
+        transparent: isGlass,
+        opacity: isGlass ? 0.55 : 1,
+      }),
+    [species.primaryColor, gradientMap, isGlass],
   );
   const finMat = useMemo(
     () => new THREE.MeshToonMaterial({ color: species.finColor, gradientMap }),
@@ -80,9 +88,24 @@ export default function FishModel({ species, swimming = false, phase = 0 }: Fish
 
       {/* Tail */}
       <group ref={tailRef} position={[tailX, 0, 0]}>
-        <mesh material={finMat} rotation={[0, 0, Math.PI / 2]} position={[-bodyScale[0] * 0.35, 0, 0]}>
-          <coneGeometry args={[bodyScale[1] * 0.9, bodyScale[0] * 0.75, 4]} />
-        </mesh>
+        {species.feature === 'doubletail' ? (
+          <>
+            <mesh material={finMat} rotation={[0, 0, Math.PI / 2 + 0.45]} position={[-bodyScale[0] * 0.28, bodyScale[1] * 0.25, 0]}>
+              <coneGeometry args={[bodyScale[1] * 0.75, bodyScale[0] * 0.8, 4]} />
+            </mesh>
+            <mesh material={finMat} rotation={[0, 0, Math.PI / 2 - 0.45]} position={[-bodyScale[0] * 0.28, -bodyScale[1] * 0.25, 0]}>
+              <coneGeometry args={[bodyScale[1] * 0.75, bodyScale[0] * 0.8, 4]} />
+            </mesh>
+          </>
+        ) : species.feature === 'blowhole' ? (
+          <mesh material={finMat} rotation={[0, 0, Math.PI / 2]} position={[-bodyScale[0] * 0.3, 0, 0]} scale={[1, 1, 1.8]}>
+            <coneGeometry args={[bodyScale[1] * 1.0, bodyScale[0] * 0.6, 4]} />
+          </mesh>
+        ) : (
+          <mesh material={finMat} rotation={[0, 0, Math.PI / 2]} position={[-bodyScale[0] * 0.35, 0, 0]}>
+            <coneGeometry args={[bodyScale[1] * 0.9, bodyScale[0] * 0.75, 4]} />
+          </mesh>
+        )}
       </group>
 
       {/* Dorsal fin */}
@@ -97,6 +120,83 @@ export default function FishModel({ species, swimming = false, phase = 0 }: Fish
       <mesh ref={finRRef} material={finMat} position={[bodyScale[0] * 0.1, -bodyScale[1] * 0.1, -bodyScale[2] * 0.85]} rotation={[-Math.PI / 2.4, 0, 0]}>
         <coneGeometry args={[bodyScale[1] * 0.35, bodyScale[0] * 0.5, 4]} />
       </mesh>
+
+      {/* Whiskers (Pebble Carp) */}
+      {species.feature === 'whiskers' && (
+        <>
+          <mesh material={finMat} position={[bodyScale[0] * 0.95, -bodyScale[1] * 0.2, bodyScale[2] * 0.25]} rotation={[0, 0, -0.55]}>
+            <cylinderGeometry args={[0.015, 0.015, bodyScale[0] * 0.55, 6]} />
+          </mesh>
+          <mesh material={finMat} position={[bodyScale[0] * 0.95, -bodyScale[1] * 0.2, -bodyScale[2] * 0.25]} rotation={[0, 0, -0.55]}>
+            <cylinderGeometry args={[0.015, 0.015, bodyScale[0] * 0.55, 6]} />
+          </mesh>
+        </>
+      )}
+
+      {/* Stripe bands (Stripe Perch) */}
+      {species.feature === 'stripes' &&
+        [-0.35, 0, 0.4].map((xOff, idx) => (
+          <mesh key={idx} material={accentMat} position={[bodyScale[0] * xOff, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
+            <torusGeometry args={[bodyScale[1] * 0.92, 0.025, 8, 16]} />
+          </mesh>
+        ))}
+
+      {/* Glowing rings (Azure Ringtail) */}
+      {species.feature === 'rings' && (
+        <>
+          <mesh position={[tailX * 0.45, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
+            <torusGeometry args={[bodyScale[1] * 0.75, 0.03, 8, 20]} />
+            <meshBasicMaterial color={species.secondaryColor} />
+          </mesh>
+          <mesh position={[tailX * 0.7, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
+            <torusGeometry args={[bodyScale[1] * 0.58, 0.025, 8, 20]} />
+            <meshBasicMaterial color={species.secondaryColor} />
+          </mesh>
+        </>
+      )}
+
+      {/* Spiny ridge segments (Shadow Eel) */}
+      {species.feature === 'segments' &&
+        [-0.55, -0.25, 0.05, 0.35].map((xOff, idx) => (
+          <mesh key={idx} material={finMat} position={[bodyScale[0] * xOff, bodyScale[1] * 0.9, 0]} rotation={[0, 0, Math.PI]}>
+            <coneGeometry args={[bodyScale[0] * 0.09, bodyScale[1] * 0.35, 4]} />
+          </mesh>
+        ))}
+
+      {/* Crystal facets (Crystal Carp) */}
+      {species.feature === 'crystals' &&
+        ([
+          [-0.2, 0.95, 0.15],
+          [0.1, 1.0, -0.15],
+          [0.35, 0.85, 0.18],
+        ] as [number, number, number][]).map((p, idx) => (
+          <mesh key={idx} position={[bodyScale[0] * p[0], bodyScale[1] * p[1], bodyScale[2] * p[2]]} rotation={[0.3, idx, 0.2]}>
+            <octahedronGeometry args={[bodyScale[1] * 0.22, 0]} />
+            <meshStandardMaterial color={species.secondaryColor} transparent opacity={0.75} />
+          </mesh>
+        ))}
+
+      {/* Broad wings + head crest (Golden Drakefin) */}
+      {species.feature === 'wings' && (
+        <>
+          <mesh material={finMat} position={[bodyScale[0] * 0.15, bodyScale[1] * 0.1, bodyScale[2] * 1.05]} rotation={[Math.PI / 2.6, 0.3, 0]}>
+            <coneGeometry args={[bodyScale[1] * 0.65, bodyScale[0] * 1.05, 4]} />
+          </mesh>
+          <mesh material={finMat} position={[bodyScale[0] * 0.15, bodyScale[1] * 0.1, -bodyScale[2] * 1.05]} rotation={[-Math.PI / 2.6, -0.3, 0]}>
+            <coneGeometry args={[bodyScale[1] * 0.65, bodyScale[0] * 1.05, 4]} />
+          </mesh>
+          <mesh material={finMat} position={[bodyScale[0] * 0.6, bodyScale[1] * 0.95, 0]} rotation={[0, 0, Math.PI]}>
+            <coneGeometry args={[bodyScale[0] * 0.22, bodyScale[1] * 0.55, 4]} />
+          </mesh>
+        </>
+      )}
+
+      {/* Blowhole (Starlight Finwhale) */}
+      {species.feature === 'blowhole' && (
+        <mesh material={accentMat} position={[bodyScale[0] * 0.5, bodyScale[1] * 0.92, 0]}>
+          <sphereGeometry args={[bodyScale[1] * 0.16, 8, 8]} />
+        </mesh>
+      )}
 
       {/* Glow halo for special fish */}
       {species.glow && (
