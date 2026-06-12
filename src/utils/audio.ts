@@ -132,6 +132,12 @@ export function playMiss(): void {
   tone(180, 0.35, 'sine', 0.2, 80);
 }
 
+/** A watery "plop" when a fish jumps and lands back in the water. */
+export function playSplash(): void {
+  noiseBurst(0.25, 1800, 'lowpass', 0.16);
+  tone(220, 0.18, 'sine', 0.12, 90);
+}
+
 /** Cash register "cha-ching" for sales and quest rewards. */
 export function playCoin(): void {
   tone(880, 0.12, 'square', 0.1);

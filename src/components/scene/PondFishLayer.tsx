@@ -5,6 +5,7 @@ import { useGameStore } from '../../store/gameStore';
 import { FISH_BY_ID } from '../../data/fishData';
 import type { SwimPattern } from '../../data/types';
 import FishModel from './FishModel';
+import { playSplash } from '../../utils/audio';
 
 interface SwimPath {
   radiusX: number;
@@ -94,6 +95,7 @@ function SwimmingFish({ speciesId, path }: { speciesId: string; path: SwimPath }
         js.nextJump = t + 8 + Math.random() * 16;
         js.splashActive = true;
         js.splashStart = t;
+        playSplash();
       } else {
         jumpArc = Math.sin(progress * Math.PI);
       }
