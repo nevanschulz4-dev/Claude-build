@@ -53,28 +53,88 @@ function swimPosition(path: SwimPath, t: number, out: THREE.Vector3): THREE.Vect
   return out;
 }
 
+const JUMP_DURATION = 1.1;
+const JUMP_HEIGHT = 0.9;
+const SPLASH_DURATION = 0.6;
+const WATER_LEVEL = 0.06;
+
 function SwimmingFish({ speciesId, path }: { speciesId: string; path: SwimPath }) {
   const species = FISH_BY_ID[speciesId];
   const groupRef = useRef<THREE.Group>(null);
+  const splashRef = useRef<THREE.Mesh>(null);
+  const splashMatRef = useRef<THREE.MeshBasicMaterial>(null);
   const lookTarget = useMemo(() => new THREE.Vector3(), []);
   const pos = useMemo(() => new THREE.Vector3(), []);
+  const jumpState = useRef({
+    active: false,
+    startTime: 0,
+    nextJump: 6 + ((path.phase * 7) % 14),
+    splashActive: false,
+    splashStart: 0,
+  });
 
   useFrame(({ clock }) => {
     if (!groupRef.current) return;
     const t = clock.getElapsedTime();
-    swimPosition(path, t, pos);
-    groupRef.current.position.copy(pos);
+    const js = jumpState.current;
 
+    swimPosition(path, t, pos);
     swimPosition(path, t + 0.05 * path.direction, lookTarget);
+
+    if (!js.active && t > js.nextJump) {
+      js.active = true;
+      js.startTime = t;
+    }
+
+    let jumpArc = 0;
+    if (js.active) {
+      const progress = (t - js.startTime) / JUMP_DURATION;
+      if (progress >= 1) {
+        js.active = false;
+        js.nextJump = t + 8 + Math.random() * 16;
+        js.splashActive = true;
+        js.splashStart = t;
+      } else {
+        jumpArc = Math.sin(progress * Math.PI);
+      }
+    }
+
+    groupRef.current.position.copy(pos);
+    groupRef.current.position.y += jumpArc * JUMP_HEIGHT;
     groupRef.current.lookAt(lookTarget);
+    groupRef.current.rotation.z += jumpArc * 0.5 * path.direction;
+
+    // Splash ring left behind when the fish lands back in the water.
+    if (splashRef.current && splashMatRef.current) {
+      if (js.splashActive) {
+        const sp = (t - js.splashStart) / SPLASH_DURATION;
+        if (sp >= 1) {
+          js.splashActive = false;
+          splashRef.current.visible = false;
+        } else {
+          splashRef.current.visible = true;
+          splashRef.current.position.set(pos.x, WATER_LEVEL, pos.z);
+          splashRef.current.scale.setScalar(0.3 + sp * 1.4);
+          splashMatRef.current.opacity = (1 - sp) * 0.6;
+        }
+      } else {
+        splashRef.current.visible = false;
+      }
+    }
   });
 
   if (!species) return null;
 
   return (
-    <group ref={groupRef}>
-      <FishModel species={species} swimming phase={path.phase} />
-    </group>
+    <>
+      <group ref={groupRef}>
+        <FishModel species={species} swimming phase={path.phase} />
+      </group>
+      <mesh ref={splashRef} rotation={[-Math.PI / 2, 0, 0]} visible={false}>
+        <ringGeometry args={[0.5, 1, 24]} />
+        <meshBasicMaterial ref={splashMatRef} color="#ffffff" transparent opacity={0.5} side={THREE.DoubleSide} depthWrite={false} />
+      </mesh>
+    </>
   );
 }
 
