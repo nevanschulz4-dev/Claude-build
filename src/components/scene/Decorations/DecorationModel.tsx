@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import * as THREE from 'three';
 import { ReedModel, LilypadModel, BonsaiModel, FlowerbedModel } from './PlantModels';
 import { RockSmallModel, RockArchModel, CrystalModel } from './RockModels';
@@ -17,7 +18,7 @@ interface DecorationModelProps extends DecorationModelComponentProps {
   defId: string;
 }
 
-type ModelComponent = (props: { preview?: boolean; valid?: boolean }) => JSX.Element;
+type ModelComponent = (props: { preview?: boolean; valid?: boolean }) => ReactElement;
 
 const MODEL_BY_ID: Record<string, ModelComponent> = {
   reed: ReedModel,
