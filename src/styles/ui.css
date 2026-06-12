@@ -96,6 +96,15 @@
   color: #ffe066;
 }
 
+.hud-time {
+  color: #cdd6f0;
+}
+
+.hud-sound-toggle {
+  font-family: inherit;
+  appearance: none;
+}
+
 /* ============ Toasts ============ */
 .toast-container {
   position: absolute;
@@ -941,6 +950,71 @@
 .sell-button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* ============ Encyclopedia panel ============ */
+.encyclopedia-card.discovered {
+  border-color: rgba(255, 209, 102, 0.4);
+}
+
+.encyclopedia-habitats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+/* ============ Quests panel ============ */
+.quest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quest-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+}
+
+.quest-card.claimed {
+  opacity: 0.55;
+}
+
+.quest-icon {
+  font-size: 26px;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quest-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quest-progress-bar {
+  max-width: none;
+  height: 8px;
+}
+
+.quest-progress-fill {
+  background: linear-gradient(90deg, #25c481, #1ec0ff);
+}
+
+.quest-action {
+  flex-shrink: 0;
 }
 
 /* ============ Responsive ============ */

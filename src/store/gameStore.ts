@@ -10,6 +10,7 @@ interface GameState {
   money: number;
   inventory: CaughtFish[];
   unlockedFishIds: string[];
+  caughtSpeciesIds: string[];
   placedDecorations: PlacedDecoration[];
   waterThemeId: string;
   rodId: string;
@@ -17,6 +18,7 @@ interface GameState {
   ownedRodIds: string[];
   totalCatches: number;
   totalEarned: number;
+  soundEnabled: boolean;
 
   // actions
   addMoney: (amount: number) => void;
@@ -30,6 +32,7 @@ interface GameState {
   setWaterTheme: (id: string, cost: number) => boolean;
   buyRod: (id: string, cost: number) => boolean;
   pondRating: () => number;
+  toggleSound: () => void;
 }
 
 export const useGameStore = create<GameState>()(
@@ -38,6 +41,7 @@ export const useGameStore = create<GameState>()(
       money: 100,
       inventory: [],
       unlockedFishIds: ['sunfin', 'pebblecarp'],
+      caughtSpeciesIds: [],
       placedDecorations: [],
       waterThemeId: 'classic',
       rodId: 'basic',
@@ -45,6 +49,7 @@ export const useGameStore = create<GameState>()(
       ownedRodIds: ['basic'],
       totalCatches: 0,
       totalEarned: 0,
+      soundEnabled: true,
 
       addMoney: (amount) => set((s) => ({ money: s.money + amount, totalEarned: s.totalEarned + Math.max(0, amount) })),
 
@@ -56,14 +61,21 @@ export const useGameStore = create<GameState>()(
       },
 
       addCatch: (fish) => {
-        const { inventory } = get();
+        const { inventory, caughtSpeciesIds } = get();
         if (inventory.length >= MAX_INVENTORY) return false;
         const entry: CaughtFish = {
           ...fish,
           uid: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
           caughtAt: Date.now(),
         };
-        set({ inventory: [...inventory, entry], totalCatches: get().totalCatches + 1 });
+        const nextCaughtSpeciesIds = caughtSpeciesIds.includes(fish.speciesId)
+          ? caughtSpeciesIds
+          : [...caughtSpeciesIds, fish.speciesId];
+        set({
+          inventory: [...inventory, entry],
+          totalCatches: get().totalCatches + 1,
+          caughtSpeciesIds: nextCaughtSpeciesIds,
+        });
         return true;
       },
 
@@ -142,6 +154,8 @@ export const useGameStore = create<GameState>()(
         const fishRating = unlockedFishIds.reduce((sum, id) => sum + (FISH_BY_ID[id] ? 1 : 0), 0) * 2;
         return decorRating + fishRating;
       },
+
+      toggleSound: () => set((s) => ({ soundEnabled: !s.soundEnabled })),
     }),
     {
       name: 'pond-game-save',

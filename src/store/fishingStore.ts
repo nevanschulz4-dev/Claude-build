@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import type { GamePhase } from '../data/types';
 import { useGameStore } from './gameStore';
 import { useLocationStore } from './locationStore';
+import { useEnvironmentStore } from './environmentStore';
+import { useQuestStore } from './questStore';
 import { ROD_UPGRADES } from '../data/decorData';
 import { LOCATION_BY_ID } from '../data/locationData';
 import { FISH_BY_ID } from '../data/fishData';
@@ -113,7 +115,11 @@ export const useFishingStore = create<FishingState>((set, get) => ({
       case 'casting': {
         const t = state.castTimer - delta;
         if (t <= 0) {
-          const biteTime = Math.max(0.5, (1.0 + Math.random() * 2.4) * (1 - rod.speedBonus * 0.5));
+          const env = useEnvironmentStore.getState();
+          let biteSpeedMod = 1;
+          if (env.isNight()) biteSpeedMod *= 0.75;
+          if (env.weather === 'rain') biteSpeedMod *= 0.8;
+          const biteTime = Math.max(0.5, (1.0 + Math.random() * 2.4) * (1 - rod.speedBonus * 0.5) * biteSpeedMod);
           set({ phase: 'waiting', castTimer: 0, biteTimer: biteTime });
         } else {
           set({ castTimer: t });
@@ -129,7 +135,11 @@ export const useFishingStore = create<FishingState>((set, get) => ({
             FISH_BY_ID[id]?.habitats.includes(currentLocationId),
           );
           const fishPool = habitatFish.length > 0 ? habitatFish : gameState.unlockedFishIds;
-          const pendingFish = rollFish(fishPool, rod.luckBonus, gameState.pondRating());
+          const env = useEnvironmentStore.getState();
+          let envLuckBonus = 0;
+          if (env.isNight()) envLuckBonus += 0.18;
+          if (env.weather === 'rain') envLuckBonus += 0.12;
+          const pendingFish = rollFish(fishPool, rod.luckBonus + envLuckBonus, gameState.pondRating());
           const windowMax = Math.max(0.5, 1.05 + rod.reelWindowBonus * 0.5 - (pendingFish.species.rarity === 'legendary' ? 0.25 : 0));
           set({
             phase: 'bite',
@@ -178,10 +188,17 @@ export const useFishingStore = create<FishingState>((set, get) => ({
 
         if (progress >= 1 && state.pendingFish) {
           const gameState = useGameStore.getState();
+          const isNewSpecies = !gameState.caughtSpeciesIds.includes(state.pendingFish.species.id);
           gameState.addCatch({
             speciesId: state.pendingFish.species.id,
             weight: state.pendingFish.weight,
             value: state.pendingFish.value,
+          });
+          useQuestStore.getState().registerCatch({
+            rarity: state.pendingFish.species.rarity,
+            locationId: useLocationStore.getState().currentLocationId,
+            value: state.pendingFish.value,
+            isNewSpecies,
           });
           set({ phase: 'result', result: state.pendingFish, pendingFish: null, isReeling: false });
         } else if (progress <= 0 || timeLeft <= 0) {

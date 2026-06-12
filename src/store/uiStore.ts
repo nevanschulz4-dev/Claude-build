@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type PanelId = 'fishing' | 'build' | 'shop' | 'inventory' | 'travel' | null;
+export type PanelId = 'fishing' | 'build' | 'shop' | 'inventory' | 'travel' | 'encyclopedia' | 'quests' | null;
 
 export interface Toast {
   id: string;

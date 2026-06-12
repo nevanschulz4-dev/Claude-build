@@ -5,6 +5,8 @@ import { useUIStore } from '../../store/uiStore';
 import { useLocationStore } from '../../store/locationStore';
 import { LOCATION_BY_ID } from '../../data/locationData';
 import { RARITY_COLORS } from '../../data/types';
+import type { GamePhase } from '../../data/types';
+import { unlockAudio, playCast, playBite, playHook, playCatch, playMiss } from '../../utils/audio';
 
 const RARITY_LABEL: Record<string, string> = {
   common: 'Common',
@@ -51,6 +53,31 @@ export default function FishingPanel() {
     if (phase !== 'result') announced.current = false;
   }, [phase, result, pushToast]);
 
+  // Sound effects on phase transitions.
+  const prevPhase = useRef<GamePhase>('idle');
+  useEffect(() => {
+    if (prevPhase.current !== phase) {
+      switch (phase) {
+        case 'casting':
+          playCast();
+          break;
+        case 'bite':
+          playBite();
+          break;
+        case 'reeling':
+          playHook();
+          break;
+        case 'result':
+          if (result && typeof result === 'object') playCatch(result.species.rarity);
+          else playMiss();
+          break;
+        default:
+          break;
+      }
+      prevPhase.current = phase;
+    }
+  }, [phase, result]);
+
   // Keyboard support: space to hook / hold-to-reel
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -76,7 +103,13 @@ export default function FishingPanel() {
       {phase === 'idle' && currentLocation.fishable && (
         <div className="fishing-stage">
           <p className="fishing-hint">Cast your line into the water and wait for a bite.</p>
-          <button className="btn btn-cast" onClick={cast}>
+          <button
+            className="btn btn-cast"
+            onClick={() => {
+              unlockAudio();
+              cast();
+            }}
+          >
             🎣 Cast Line
           </button>
         </div>

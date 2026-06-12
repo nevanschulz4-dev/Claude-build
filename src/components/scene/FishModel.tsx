@@ -198,6 +198,60 @@ export default function FishModel({ species, swimming = false, phase = 0 }: Fish
         </mesh>
       )}
 
+      {/* Speckled spots scattered across the back */}
+      {species.feature === 'spots' &&
+        ([
+          [0.45, 0.55, 0.35],
+          [0.05, 0.65, -0.4],
+          [-0.4, 0.5, 0.3],
+          [0.3, 0.35, -0.55],
+          [-0.15, 0.6, 0.5],
+        ] as [number, number, number][]).map((p, idx) => (
+          <mesh key={idx} material={accentMat} position={[bodyScale[0] * p[0], bodyScale[1] * p[1], bodyScale[2] * p[2]]}>
+            <sphereGeometry args={[bodyScale[1] * 0.14, 8, 8]} />
+          </mesh>
+        ))}
+
+      {/* Glowing lure antenna (Abyssal Anglerfish) */}
+      {species.feature === 'antenna' && (
+        <group position={[bodyScale[0] * 0.55, bodyScale[1] * 0.85, 0]} rotation={[0, 0, -0.3]}>
+          <mesh material={finMat}>
+            <cylinderGeometry args={[0.02, 0.03, bodyScale[1] * 1.1, 6]} />
+          </mesh>
+          <mesh position={[0, bodyScale[1] * 0.6, 0]}>
+            <sphereGeometry args={[0.09, 10, 10]} />
+            <meshBasicMaterial color={species.secondaryColor} />
+          </mesh>
+        </group>
+      )}
+
+      {/* Towering sail fin (Emperor Leviathan, Phoenix Flarefin) */}
+      {species.feature === 'sail' && (
+        <mesh material={finMat} position={[0, bodyScale[1] * 1.05, 0]} rotation={[0, 0, Math.PI]} scale={[1.6, 1.8, 0.4]}>
+          <coneGeometry args={[bodyScale[0] * 0.55, bodyScale[1] * 1.1, 4]} />
+        </mesh>
+      )}
+
+      {/* Forward-pointing horn (Sabertooth Pike) */}
+      {species.feature === 'horn' && (
+        <mesh material={accentMat} position={[bodyScale[0] * 1.05, bodyScale[1] * 0.05, 0]} rotation={[0, 0, -Math.PI / 2]}>
+          <coneGeometry args={[bodyScale[1] * 0.18, bodyScale[0] * 0.55, 6]} />
+        </mesh>
+      )}
+
+      {/* Flowing spiny mane (Lionfin Betta) */}
+      {species.feature === 'mane' &&
+        [-0.5, -0.25, 0, 0.25, 0.5].map((xOff, idx) => (
+          <mesh
+            key={idx}
+            material={finMat}
+            position={[bodyScale[0] * xOff, bodyScale[1] * 0.78, 0]}
+            rotation={[0, 0, Math.PI + xOff * 0.4]}
+          >
+            <coneGeometry args={[bodyScale[0] * 0.07, bodyScale[1] * 0.6, 4]} />
+          </mesh>
+        ))}
+
       {/* Glow halo for special fish */}
       {species.glow && (
         <mesh scale={[bodyScale[0] * 1.4, bodyScale[1] * 1.4, bodyScale[2] * 1.4]}>

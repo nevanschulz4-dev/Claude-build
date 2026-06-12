@@ -35,7 +35,12 @@ export type FishFeature =
   | 'segments'
   | 'crystals'
   | 'wings'
-  | 'blowhole';
+  | 'blowhole'
+  | 'spots'
+  | 'antenna'
+  | 'sail'
+  | 'horn'
+  | 'mane';
 
 export interface FishSpecies {
   id: string;

@@ -1,8 +1,11 @@
 import { useMemo } from 'react';
-import { Sky } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
+import { Sky, Stars } from '@react-three/drei';
 import { useToonGradient, useGrassTexture, useSandTexture, useMudTexture } from '../../utils/textures';
 import type { EnvironmentTheme, LocationId } from '../../data/types';
 import BiomeLandmarks from './BiomeLandmarks';
+import Rain from './Rain';
+import { useEnvironmentStore, getDayFactor } from '../../store/environmentStore';
 import * as THREE from 'three';
 
 interface TreeProps {
@@ -58,7 +61,6 @@ export default function Environment({
   skyRayleigh = 2.5,
   mieCoefficient = 0.006,
   mieDirectionalG = 0.75,
-  sunPosition = [20, 18, 10],
   ambientColor = '#fff7e8',
   hemisphereSky = '#bfe9ff',
   hemisphereGround = '#7bc47f',
@@ -70,6 +72,56 @@ export default function Environment({
   const grassTexture = useGrassTexture();
   const sandTexture = useSandTexture();
   const mudTexture = useMudTexture();
+
+  const timeOfDay = useEnvironmentStore((s) => s.timeOfDay);
+  const weather = useEnvironmentStore((s) => s.weather);
+
+  useFrame((_, delta) => {
+    useEnvironmentStore.getState().tick(delta);
+  });
+
+  const dayFactor = getDayFactor(timeOfDay);
+  const dayClamp = Math.max(0, dayFactor);
+  const nightClamp = Math.max(0, -dayFactor);
+  const isRaining = weather === 'rain';
+  const isNight = dayFactor < 0.05;
+
+  const sunAngle = (timeOfDay - 0.25) * Math.PI * 2;
+  const skySunPosition = useMemo<[number, number, number]>(
+    () => [Math.cos(sunAngle) * 100, Math.sin(sunAngle) * 100, 30],
+    [sunAngle],
+  );
+  const lightPosition = useMemo<[number, number, number]>(
+    () => [Math.cos(sunAngle) * 30, Math.max(8, Math.sin(sunAngle) * 30), 20],
+    [sunAngle],
+  );
+
+  const ambientCol = useMemo(
+    () => new THREE.Color(ambientColor).lerp(new THREE.Color('#1a2540'), nightClamp * 0.85).getStyle(),
+    [ambientColor, nightClamp],
+  );
+  const ambientIntensity = 0.55 * (0.35 + 0.65 * Math.max(dayClamp, 0.15)) * (isRaining ? 0.7 : 1);
+
+  const hemiSkyCol = useMemo(
+    () => new THREE.Color(hemisphereSky).lerp(new THREE.Color('#0a1530'), nightClamp * 0.85).getStyle(),
+    [hemisphereSky, nightClamp],
+  );
+  const hemiGroundCol = useMemo(
+    () => new THREE.Color(hemisphereGround).lerp(new THREE.Color('#0a1018'), nightClamp * 0.7).getStyle(),
+    [hemisphereGround, nightClamp],
+  );
+
+  const dirColor = useMemo(() => {
+    if (dayFactor >= 0) return new THREE.Color('#FFB37A').lerp(new THREE.Color('#fff4d6'), dayFactor).getStyle();
+    return '#4a5a8a';
+  }, [dayFactor]);
+  const dirIntensity = (0.15 + 2.05 * Math.max(dayClamp, 0)) * (isRaining ? 0.5 : 1);
+
+  const fogConfig = useMemo<[string, number, number] | null>(() => {
+    if (isRaining) return ['#7d8a99', 8, 38];
+    if (biomeId === 'swamp') return ['#9aa88c', 10, 42];
+    return null;
+  }, [isRaining, biomeId]);
 
   const textures: Record<'grass' | 'sand' | 'mud', THREE.Texture> = {
     grass: grassTexture,
@@ -110,18 +162,24 @@ export default function Environment({
   return (
     <>
       {/* Sky + sun */}
-      <Sky distance={450000} sunPosition={sunPosition} turbidity={skyTurbidity} rayleigh={skyRayleigh} mieCoefficient={mieCoefficient} mieDirectionalG={mieDirectionalG} />
+      <Sky distance={450000} sunPosition={skySunPosition} turbidity={skyTurbidity} rayleigh={skyRayleigh} mieCoefficient={mieCoefficient} mieDirectionalG={mieDirectionalG} />
 
-      {/* Murky haze for the swamp */}
-      {biomeId === 'swamp' && <fog attach="fog" args={['#9aa88c', 10, 42]} />}
+      {/* Stars fade in once the sun dips below the horizon */}
+      {isNight && <Stars radius={120} depth={60} count={2500} factor={4} saturation={0} fade speed={0.3} />}
+
+      {/* Murky haze for the swamp, or low visibility during rain */}
+      {fogConfig && <fog attach="fog" args={fogConfig} />}
+
+      {/* Falling rain */}
+      {isRaining && <Rain />}
 
       {/* Lighting */}
-      <ambientLight intensity={0.55} color={ambientColor} />
-      <hemisphereLight args={[hemisphereSky, hemisphereGround, 0.6]} />
+      <ambientLight intensity={ambientIntensity} color={ambientCol} />
+      <hemisphereLight args={[hemiSkyCol, hemiGroundCol, 0.6]} />
       <directionalLight
-        position={[20, 25, 15]}
-        intensity={2.2}
-        color="#fff4d6"
+        position={lightPosition}
+        intensity={dirIntensity}
+        color={dirColor}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}

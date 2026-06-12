@@ -2,6 +2,7 @@ import { useGameStore, MAX_INVENTORY } from '../../store/gameStore';
 import { useUIStore } from '../../store/uiStore';
 import { FISH_BY_ID } from '../../data/fishData';
 import { RARITY_COLORS } from '../../data/types';
+import { playCoin } from '../../utils/audio';
 
 const RARITY_LABEL: Record<string, string> = {
   common: 'Common',
@@ -24,6 +25,7 @@ export default function InventoryPanel() {
     const total = inventory.reduce((sum, f) => sum + f.value, 0);
     if (total === 0) return;
     sellAll();
+    playCoin();
     pushToast(`Sold all fish for $${total.toLocaleString()}!`, 'success');
   };
 
@@ -32,6 +34,7 @@ export default function InventoryPanel() {
     if (!fish) return;
     const species = FISH_BY_ID[fish.speciesId];
     sellFish(uid);
+    playCoin();
     pushToast(`Sold ${species?.name ?? 'fish'} for $${fish.value.toLocaleString()}`, 'success');
   };
 

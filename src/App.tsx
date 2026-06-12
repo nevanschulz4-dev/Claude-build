@@ -9,6 +9,8 @@ import BuildPanel from './components/ui/BuildPanel';
 import ShopPanel from './components/ui/ShopPanel';
 import InventoryPanel from './components/ui/InventoryPanel';
 import TravelPanel from './components/ui/TravelPanel';
+import EncyclopediaPanel from './components/ui/EncyclopediaPanel';
+import QuestsPanel from './components/ui/QuestsPanel';
 import TouchControls from './components/ui/TouchControls';
 import { useUIStore } from './store/uiStore';
 import './styles/ui.css';
@@ -19,6 +21,8 @@ const PANEL_TITLES: Record<string, string> = {
   shop: 'Shop',
   inventory: 'Inventory',
   travel: 'Travel',
+  encyclopedia: 'Fish Encyclopedia',
+  quests: 'Daily Quests',
 };
 
 function ActivePanel() {
@@ -41,6 +45,8 @@ function ActivePanel() {
         {activePanel === 'shop' && <ShopPanel />}
         {activePanel === 'inventory' && <InventoryPanel />}
         {activePanel === 'travel' && <TravelPanel />}
+        {activePanel === 'encyclopedia' && <EncyclopediaPanel />}
+        {activePanel === 'quests' && <QuestsPanel />}
       </div>
     </div>
   );
