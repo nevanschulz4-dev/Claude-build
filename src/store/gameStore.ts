@@ -7,6 +7,11 @@ import { useEnvironmentStore } from './environmentStore';
 
 export const MAX_INVENTORY = 16;
 
+/** Passive income earned per second, per point of pond rating. */
+const IDLE_INCOME_RATE = 0.02;
+/** Caps how much offline time counts toward idle income (4 hours). */
+const MAX_IDLE_SECONDS = 4 * 60 * 60;
+
 const EMPTY_RARITY_COUNTS: Record<Rarity, number> = {
   common: 0,
   uncommon: 0,
@@ -34,6 +39,7 @@ interface GameState {
   visitedLocations: LocationId[];
   ownedBait: Record<string, number>;
   activeBaitId: string | null;
+  lastActiveTime: number;
 
   // actions
   addMoney: (amount: number) => void;
@@ -52,6 +58,7 @@ interface GameState {
   buyBait: (id: string, cost: number) => boolean;
   setActiveBait: (id: string | null) => void;
   consumeActiveBait: () => void;
+  collectIdleIncome: () => { earned: number; elapsedSeconds: number };
 }
 
 export const useGameStore = create<GameState>()(
@@ -75,6 +82,7 @@ export const useGameStore = create<GameState>()(
       visitedLocations: ['home'],
       ownedBait: {},
       activeBaitId: null,
+      lastActiveTime: Date.now(),
 
       addMoney: (amount) => set((s) => ({ money: s.money + amount, totalEarned: s.totalEarned + Math.max(0, amount) })),
 
@@ -226,6 +234,16 @@ export const useGameStore = create<GameState>()(
           ownedBait: nextOwned,
           activeBaitId: remaining > 0 ? activeBaitId : null,
         });
+      },
+
+      collectIdleIncome: () => {
+        const { lastActiveTime, pondRating, addMoney } = get();
+        const now = Date.now();
+        const elapsedSeconds = Math.min(MAX_IDLE_SECONDS, Math.max(0, (now - lastActiveTime) / 1000));
+        const earned = Math.floor(pondRating() * IDLE_INCOME_RATE * elapsedSeconds);
+        if (earned > 0) addMoney(earned);
+        set({ lastActiveTime: now });
+        return { earned, elapsedSeconds };
       },
     }),
     {
