@@ -9,6 +9,7 @@ import Bubbles from '../Bubbles';
 import Dragonflies from '../Dragonflies';
 import AmbientMinnows from '../AmbientMinnows';
 import FloatingLeaves from '../FloatingLeaves';
+import Fireflies from '../Fireflies';
 import { getPondRadius } from '../../../utils/pond';
 
 /** The player's home pond: decorative, non-fishable, shows unlocked fish swimming. */
@@ -26,6 +27,7 @@ export default function HomeScene() {
       <Dragonflies />
       <AmbientMinnows />
       <FloatingLeaves radius={pondRadius} />
+      <Fireflies />
       <PondFishLayer pondRadius={pondRadius} />
       <DecorationsLayer />
       <PlacementController pondRadius={pondRadius} />
