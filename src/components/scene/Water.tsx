@@ -76,8 +76,14 @@ const FRAGMENT_SHADER = /* glsl */ `
 
     float foamMask = smoothstep(0.09, 0.16, vElevation);
 
+    // Dappled caustic light patterns in shallow water, fading with depth/night/rain.
+    float caustic = sin(vWorldPos.x * 3.0 + uTime * 1.3) * sin(vWorldPos.z * 3.0 - uTime * 1.7);
+    caustic += sin(vWorldPos.x * 5.0 - uTime * 0.9) * sin(vWorldPos.z * 4.0 + uTime * 1.1) * 0.5;
+    caustic = max(0.0, caustic) * (1.0 - depthMix) * (1.0 - uNight * 0.85) * (1.0 - uRain * 0.7);
+
     vec3 color = mix(base, uFoam, fresnel * 0.45);
     color = mix(color, uFoam, foamMask * 0.6);
+    color += vec3(1.0, 1.0, 0.85) * caustic * 0.12;
     color += vec3(1.0, 0.97, 0.85) * spec * 0.9;
 
     // Cool, dim the water at night and dull it under rain.
