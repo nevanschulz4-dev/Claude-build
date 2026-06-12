@@ -9,6 +9,7 @@ import BuildPanel from './components/ui/BuildPanel';
 import ShopPanel from './components/ui/ShopPanel';
 import InventoryPanel from './components/ui/InventoryPanel';
 import TravelPanel from './components/ui/TravelPanel';
+import TouchControls from './components/ui/TouchControls';
 import { useUIStore } from './store/uiStore';
 import './styles/ui.css';
 
@@ -53,6 +54,8 @@ export default function App() {
           <Experience />
         </Suspense>
       </Canvas>
+
+      <TouchControls />
 
       <div className="ui-overlay">
         <HUD />

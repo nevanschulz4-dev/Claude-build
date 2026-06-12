@@ -1,5 +1,6 @@
 import { useLocationStore } from '../../store/locationStore';
 import { useUIStore } from '../../store/uiStore';
+import { useCameraControls } from '../../store/cameraStore';
 import { LOCATIONS } from '../../data/locationData';
 
 export default function TravelPanel() {
@@ -18,6 +19,7 @@ export default function TravelPanel() {
           const handleTravel = () => {
             if (current) return;
             setLocation(loc.id);
+            useCameraControls.getState().resetView();
             setActivePanel(null);
             pushToast(`Traveled to ${loc.name}`, 'info');
           };

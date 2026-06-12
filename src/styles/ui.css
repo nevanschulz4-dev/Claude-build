@@ -33,6 +33,36 @@
   font-family: 'Segoe UI', 'Trebuchet MS', system-ui, sans-serif;
 }
 
+/* ============ Touch camera controls ============ */
+.touch-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  touch-action: none;
+}
+
+.touch-zone-move {
+  left: 0;
+}
+
+.touch-zone-look {
+  right: 0;
+}
+
+.touch-zone-label {
+  position: absolute;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
 /* ============ HUD ============ */
 .hud-bar {
   display: flex;

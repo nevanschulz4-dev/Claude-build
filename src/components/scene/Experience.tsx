@@ -1,7 +1,8 @@
-import { OrbitControls, ContactShadows } from '@react-three/drei';
+import { ContactShadows } from '@react-three/drei';
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import HomeScene from './locations/HomeScene';
 import FishingLocationScene from './locations/FishingLocationScene';
+import CameraRig from './CameraRig';
 import { useLocationStore } from '../../store/locationStore';
 import { BIOMES } from '../../data/locationData';
 
@@ -18,15 +19,7 @@ export default function Experience() {
 
       <ContactShadows position={[0, 0.01, 0]} opacity={0.35} scale={20} blur={2} far={4} />
 
-      <OrbitControls
-        makeDefault
-        minDistance={6}
-        maxDistance={26}
-        maxPolarAngle={Math.PI / 2.05}
-        minPolarAngle={0.3}
-        target={[0, 0.5, 0]}
-        enablePan={false}
-      />
+      <CameraRig />
 
       <EffectComposer>
         <Bloom luminanceThreshold={0.5} luminanceSmoothing={0.25} intensity={0.6} mipmapBlur />
