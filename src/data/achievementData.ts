@@ -1,4 +1,5 @@
 import type { Rarity } from './types';
+import { RATING_FOR_MAX_SIZE } from '../utils/pond';
 
 export interface AchievementContext {
   totalCatches: number;
@@ -13,6 +14,7 @@ export interface AchievementContext {
   rodsOwned: number;
   waterThemesOwned: number;
   heaviestCatch: number;
+  pondRating: number;
 }
 
 export interface AchievementDef {
@@ -214,5 +216,14 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     reward: 350,
     target: 5,
     progress: (ctx) => Math.min(5, ctx.heaviestCatch),
+  },
+  {
+    id: 'sprawling-pond',
+    name: 'Sprawling Pond',
+    description: `Grow your pond rating to ${RATING_FOR_MAX_SIZE} and watch the pond reach its full size`,
+    icon: '🌊',
+    reward: 600,
+    target: RATING_FOR_MAX_SIZE,
+    progress: (ctx) => Math.min(RATING_FOR_MAX_SIZE, ctx.pondRating),
   },
 ];

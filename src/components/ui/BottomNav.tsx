@@ -33,6 +33,7 @@ export default function BottomNav() {
   const rodsOwned = useGameStore((s) => s.ownedRodIds.length);
   const waterThemesOwned = useGameStore((s) => s.ownedWaterThemeIds.length);
   const heaviestCatch = useGameStore((s) => Math.max(0, ...Object.values(s.bestCatchWeights)));
+  const pondRating = useGameStore((s) => s.pondRating());
   const questsClaimed = useQuestStore((s) => s.totalClaimed);
   const claimedAchievementIds = useAchievementStore((s) => s.claimedIds);
 
@@ -49,6 +50,7 @@ export default function BottomNav() {
     rodsOwned,
     waterThemesOwned,
     heaviestCatch,
+    pondRating,
   };
   const claimableAchievements = ACHIEVEMENTS.filter(
     (a) => !claimedAchievementIds.includes(a.id) && a.progress(ctx) >= a.target,
