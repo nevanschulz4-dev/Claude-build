@@ -5,6 +5,7 @@ import { WATER_THEMES } from '../../../data/decorData';
 import DecorationsLayer from '../DecorationsLayer';
 import PlacementController from '../PlacementController';
 import PondFishLayer from '../PondFishLayer';
+import Bubbles from '../Bubbles';
 
 /** The player's home pond: decorative, non-fishable, shows unlocked fish swimming. */
 export default function HomeScene() {
@@ -15,6 +16,7 @@ export default function HomeScene() {
     <>
       <Environment />
       <Water radius={6} shallow={theme.shallow} deep={theme.deep} foam={theme.foam} />
+      <Bubbles radius={6} />
       <PondFishLayer />
       <DecorationsLayer />
       <PlacementController />
