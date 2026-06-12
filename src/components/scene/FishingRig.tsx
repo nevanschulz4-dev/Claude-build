@@ -11,12 +11,18 @@ const ROD_TIP_REST = new THREE.Vector3(0.55, 1.85, 5.5);
 const BOBBER_REST = new THREE.Vector3(0.3, 0.08, -1.8);
 const BOBBER_HIDDEN = new THREE.Vector3(0.9, 0.35, 6.2);
 
+const LINE_SEGMENTS = 14;
+const RIPPLE_PERIOD = 2.2;
+
 export default function FishingRig() {
   const gradientMap = useToonGradient(4);
   const bobberRef = useRef<THREE.Group>(null);
   const lineGeoRef = useRef<THREE.BufferGeometry>(null);
+  const linePositions = useRef(new Float32Array((LINE_SEGMENTS + 1) * 3));
   const rodGroupRef = useRef<THREE.Group>(null);
   const currentBobberPos = useRef(BOBBER_HIDDEN.clone());
+  const ripple1Ref = useRef<THREE.Mesh>(null);
+  const ripple2Ref = useRef<THREE.Mesh>(null);
 
   useFrame((state, delta) => {
     useFishingStore.getState().tick(delta);
@@ -59,13 +65,36 @@ export default function FishingRig() {
       bobberRef.current.position.lerp(target, phase === 'reeling' ? 0.4 : 0.15);
     }
 
-    // Update fishing line geometry
+    // Update fishing line geometry with a gentle sag between rod tip and bobber
     if (lineGeoRef.current && bobberRef.current) {
-      const positions = new Float32Array([
-        ROD_TIP_REST.x, ROD_TIP_REST.y, ROD_TIP_REST.z,
-        bobberRef.current.position.x, bobberRef.current.position.y, bobberRef.current.position.z,
-      ]);
+      const end = bobberRef.current.position;
+      const dist = ROD_TIP_REST.distanceTo(end);
+      const sagBase = phase === 'reeling' ? 0.06 : Math.min(0.5, 0.12 + dist * 0.04);
+      const positions = linePositions.current;
+      for (let i = 0; i <= LINE_SEGMENTS; i++) {
+        const f = i / LINE_SEGMENTS;
+        const sag = Math.sin(f * Math.PI) * sagBase;
+        positions[i * 3] = THREE.MathUtils.lerp(ROD_TIP_REST.x, end.x, f);
+        positions[i * 3 + 1] = THREE.MathUtils.lerp(ROD_TIP_REST.y, end.y, f) - sag;
+        positions[i * 3 + 2] = THREE.MathUtils.lerp(ROD_TIP_REST.z, end.z, f);
+      }
       lineGeoRef.current.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    }
+
+    // Ripple rings spreading from the bobber while it rests on the water
+    const showRipple = (phase === 'waiting' || phase === 'bite' || phase === 'result') && bobberRef.current;
+    for (const [ref, offset] of [[ripple1Ref, 0], [ripple2Ref, RIPPLE_PERIOD / 2]] as const) {
+      const mesh = ref.current;
+      if (!mesh) continue;
+      if (!showRipple) {
+        mesh.visible = false;
+        continue;
+      }
+      mesh.visible = true;
+      const progress = ((t + offset) % RIPPLE_PERIOD) / RIPPLE_PERIOD;
+      mesh.scale.setScalar(0.2 + progress * 0.9);
+      mesh.position.set(bobberRef.current!.position.x, 0.015, bobberRef.current!.position.z);
+      (mesh.material as THREE.MeshBasicMaterial).opacity = (1 - progress) * 0.45;
     }
 
     // Rod tip wobble during reeling
@@ -205,6 +234,16 @@ export default function FishingRig() {
         <bufferGeometry ref={lineGeoRef} />
         <lineBasicMaterial color="#ffffff" transparent opacity={0.85} />
       </line>
+
+      {/* Ripple rings around the bobber while it rests on the water */}
+      <mesh ref={ripple1Ref} rotation={[-Math.PI / 2, 0, 0]} visible={false}>
+        <ringGeometry args={[0.18, 0.24, 24]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0} side={THREE.DoubleSide} depthWrite={false} />
+      </mesh>
+      <mesh ref={ripple2Ref} rotation={[-Math.PI / 2, 0, 0]} visible={false}>
+        <ringGeometry args={[0.18, 0.24, 24]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0} side={THREE.DoubleSide} depthWrite={false} />
+      </mesh>
 
       {/* Bobber */}
       <group ref={bobberRef} position={BOBBER_HIDDEN}>
