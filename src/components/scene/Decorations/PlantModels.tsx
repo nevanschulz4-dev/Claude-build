@@ -1,4 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import type * as THREE from 'three';
 import { useDecorMaterials, type DecorationModelProps } from './shared';
 
 /** Cluster of tall thin reeds swaying gently. */
@@ -42,6 +44,7 @@ export function ReedModel({ preview = false, valid = true }: DecorationModelProp
 /** Floating lily pads with a small flower, sits flush on the water surface. */
 export function LilypadModel({ preview = false, valid = true }: DecorationModelProps) {
   const { mat } = useDecorMaterials(preview, valid);
+  const frogRef = useRef<THREE.Group>(null);
 
   const pads = useMemo(
     () => [
@@ -52,6 +55,16 @@ export function LilypadModel({ preview = false, valid = true }: DecorationModelP
     [],
   );
 
+  useFrame(({ clock }) => {
+    if (!frogRef.current) return;
+    const t = clock.getElapsedTime();
+    // Idle breathing, with an occasional little hop.
+    const hopCycle = (t * 0.15) % 1;
+    const hop = hopCycle > 0.92 ? Math.sin(((hopCycle - 0.92) / 0.08) * Math.PI) * 0.06 : 0;
+    frogRef.current.position.y = 0.035 + hop;
+    frogRef.current.scale.y = 1 + Math.sin(t * 3) * 0.04;
+  });
+
   return (
     <group>
       {pads.map((p, i) => (
@@ -60,12 +73,33 @@ export function LilypadModel({ preview = false, valid = true }: DecorationModelP
         </mesh>
       ))}
       {/* Flower */}
-      <mesh position={[0, 0.04, 0]} material={mat('#FF6FA8')}>
+      <mesh position={[0.16, 0.04, 0.16]} material={mat('#FF6FA8')}>
         <sphereGeometry args={[0.08, 8, 6]} />
       </mesh>
-      <mesh position={[0, 0.05, 0]} material={mat('#FFD166')}>
+      <mesh position={[0.16, 0.05, 0.16]} material={mat('#FFD166')}>
         <sphereGeometry args={[0.04, 8, 6]} />
       </mesh>
+
+      {/* Frog perched on the main pad */}
+      <group ref={frogRef} position={[-0.05, 0.035, -0.05]}>
+        <mesh material={mat('#5A9F4A')} scale={[0.16, 0.1, 0.18]} castShadow>
+          <sphereGeometry args={[1, 12, 10]} />
+        </mesh>
+        {[1, -1].map((side) => (
+          <group key={side} position={[0.07, 0.07, 0.07 * side]}>
+            <mesh material={mat('#5A9F4A')}>
+              <sphereGeometry args={[0.055, 10, 10]} />
+            </mesh>
+            <mesh position={[0.02, 0.025, 0]} material={mat('#FFD166')}>
+              <sphereGeometry args={[0.03, 8, 8]} />
+            </mesh>
+            <mesh position={[0.035, 0.03, 0]}>
+              <sphereGeometry args={[0.013, 6, 6]} />
+              <meshStandardMaterial color="#1c1c22" />
+            </mesh>
+          </group>
+        ))}
+      </group>
     </group>
   );
 }
