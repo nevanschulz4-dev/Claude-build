@@ -95,6 +95,10 @@ export default function Environment({
     () => [Math.cos(sunAngle) * 30, Math.max(8, Math.sin(sunAngle) * 30), 20],
     [sunAngle],
   );
+  const moonPosition = useMemo<[number, number, number]>(
+    () => [3 + Math.cos(sunAngle) * 2, 4.5, -6.5],
+    [sunAngle],
+  );
 
   const ambientCol = useMemo(
     () => new THREE.Color(ambientColor).lerp(new THREE.Color('#1a2540'), nightClamp * 0.85).getStyle(),
@@ -166,6 +170,20 @@ export default function Environment({
 
       {/* Stars fade in once the sun dips below the horizon */}
       {isNight && <Stars radius={120} depth={60} count={2500} factor={4} saturation={0} fade speed={0.3} />}
+
+      {/* Moon hangs over the pond at night */}
+      {isNight && (
+        <group position={moonPosition}>
+          <mesh>
+            <sphereGeometry args={[1.5, 16, 16]} />
+            <meshBasicMaterial color="#F4F1E8" />
+          </mesh>
+          <mesh scale={1.8}>
+            <sphereGeometry args={[1.5, 16, 16]} />
+            <meshBasicMaterial color="#AEC6E8" transparent opacity={0.15} depthWrite={false} />
+          </mesh>
+        </group>
+      )}
 
       {/* Murky haze for the swamp, or low visibility during rain */}
       {fogConfig && <fog attach="fog" args={fogConfig} />}
