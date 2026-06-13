@@ -92,6 +92,15 @@ export const DECORATIONS: DecorationDef[] = [
     description: 'A bubbling fountain that sparkles in the sunlight.',
   },
   {
+    id: 'windmill',
+    name: 'Tiny Windmill',
+    category: 'structure',
+    cost: 450,
+    ratingValue: 20,
+    footprint: 1.3,
+    description: 'A charming windmill with slowly spinning blades.',
+  },
+  {
     id: 'lantern',
     name: 'Glowing Lantern',
     category: 'light',

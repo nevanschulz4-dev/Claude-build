@@ -135,3 +135,52 @@ export function FountainModel({ preview = false, valid = true }: DecorationModel
     </group>
   );
 }
+
+/** Tapered tower with a conical roof and four slowly spinning blades. */
+export function WindmillModel({ preview = false, valid = true }: DecorationModelProps) {
+  const { mat } = useDecorMaterials(preview, valid);
+  const bladesRef = useRef<THREE.Group>(null);
+
+  useFrame((_, delta) => {
+    if (bladesRef.current && !preview) {
+      bladesRef.current.rotation.z += delta * 1.2;
+    }
+  });
+
+  return (
+    <group>
+      {/* Tower */}
+      <mesh position={[0, 0.5, 0]} material={mat('#E8DCC8')} castShadow receiveShadow>
+        <cylinderGeometry args={[0.22, 0.32, 1.0, 10]} />
+      </mesh>
+      {/* Roof */}
+      <mesh position={[0, 1.15, 0]} material={mat('#9C5B3C')} castShadow>
+        <coneGeometry args={[0.28, 0.3, 10]} />
+      </mesh>
+      {/* Door */}
+      <mesh position={[0, 0.2, 0.315]} material={mat('#7A4A2B')}>
+        <boxGeometry args={[0.14, 0.26, 0.02]} />
+      </mesh>
+      {/* Window */}
+      <mesh position={[0, 0.7, 0.28]} material={mat('#9BE8FF', { emissive: '#9BE8FF', emissiveIntensity: 0.2 })}>
+        <boxGeometry args={[0.12, 0.12, 0.02]} />
+      </mesh>
+
+      {/* Spinning blades */}
+      <group position={[0, 0.95, 0.34]}>
+        <mesh rotation={[Math.PI / 2, 0, 0]} material={mat('#7A4A2B')} castShadow>
+          <cylinderGeometry args={[0.045, 0.045, 0.08, 8]} />
+        </mesh>
+        <group ref={bladesRef}>
+          {[0, 1, 2, 3].map((i) => (
+            <group key={i} rotation={[0, 0, (i * Math.PI) / 2]}>
+              <mesh position={[0, 0.29, 0]} material={mat('#EDE6D6')} castShadow>
+                <boxGeometry args={[0.08, 0.58, 0.02]} />
+              </mesh>
+            </group>
+          ))}
+        </group>
+      </group>
+    </group>
+  );
+}
