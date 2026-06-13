@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { CaughtFish, PlacedDecoration, LocationId, Rarity } from '../data/types';
-import { DECOR_BY_ID } from '../data/decorData';
+import { DECOR_BY_ID, WATER_DECOR_IDS } from '../data/decorData';
 import { FISH_BY_ID } from '../data/fishData';
 import { useEnvironmentStore } from './environmentStore';
+import { getPondRadius } from '../utils/pond';
 
 export const MAX_INVENTORY = 16;
 
@@ -256,6 +257,31 @@ export const useGameStore = create<GameState>()(
     }),
     {
       name: 'pond-game-save',
+      version: 1,
+      // v0 -> v1: the home pond grew significantly, so push any decorations that
+      // would now be submerged out to just past the new pond's edge.
+      migrate: (persistedState, version) => {
+        const state = persistedState as Partial<GameState>;
+        if (version < 1 && state.placedDecorations?.length) {
+          const decorRating = state.placedDecorations.reduce(
+            (sum, d) => sum + (DECOR_BY_ID[d.defId]?.ratingValue ?? 0),
+            0,
+          );
+          const fishRating = (state.unlockedFishIds ?? []).reduce((sum, id) => sum + (FISH_BY_ID[id] ? 1 : 0), 0) * 2;
+          const pondRadius = getPondRadius(decorRating + fishRating);
+          const minDist = pondRadius + 0.3;
+
+          state.placedDecorations = state.placedDecorations.map((d) => {
+            if (WATER_DECOR_IDS.has(d.defId)) return d;
+            const [x, y, z] = d.position;
+            const dist = Math.hypot(x, z);
+            if (dist >= minDist) return d;
+            const angle = dist > 0 ? Math.atan2(z, x) : 0;
+            return { ...d, position: [Math.cos(angle) * minDist, y, Math.sin(angle) * minDist] };
+          });
+        }
+        return state as GameState;
+      },
     },
   ),
 );

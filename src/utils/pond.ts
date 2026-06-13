@@ -1,7 +1,7 @@
 /** The home pond's starting radius, before any rating-based growth. */
-export const POND_BASE_RADIUS = 6;
+export const POND_BASE_RADIUS = 12;
 /** The largest the home pond can grow to at maximum pond rating. */
-export const POND_MAX_RADIUS = 10;
+export const POND_MAX_RADIUS = 20;
 /** Pond rating at which the pond reaches its maximum size. */
 export const RATING_FOR_MAX_SIZE = 72;
 

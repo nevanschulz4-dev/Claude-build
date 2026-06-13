@@ -214,6 +214,9 @@ export const DECOR_BY_ID: Record<string, DecorationDef> = Object.fromEntries(
   DECORATIONS.map((d) => [d.id, d]),
 );
 
+/** Decoration ids that are placeable on the water surface (near the pond edge). */
+export const WATER_DECOR_IDS = new Set(['lilypad']);
+
 export const ROD_UPGRADES: RodUpgrade[] = [
   {
     id: 'basic',

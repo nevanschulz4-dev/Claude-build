@@ -25,10 +25,11 @@ export default function HomeScene() {
   const pondRating = useGameStore((s) => s.pondRating());
   const theme = WATER_THEMES.find((t) => t.id === waterThemeId) ?? WATER_THEMES[0];
   const pondRadius = getPondRadius(pondRating);
+  const groundRadius = 36;
 
   return (
     <>
-      <Environment pondRadius={pondRadius} />
+      <Environment pondRadius={pondRadius} groundRadius={groundRadius} />
       <Water radius={pondRadius} shallow={theme.shallow} deep={theme.deep} foam={theme.foam} />
       <Bubbles radius={pondRadius} />
       <Dragonflies />
@@ -44,7 +45,7 @@ export default function HomeScene() {
       <Rabbits pondRadius={pondRadius} />
       <PondFishLayer pondRadius={pondRadius} />
       <DecorationsLayer />
-      <PlacementController pondRadius={pondRadius} />
+      <PlacementController pondRadius={pondRadius} groundRadius={groundRadius} />
     </>
   );
 }

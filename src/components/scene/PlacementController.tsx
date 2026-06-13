@@ -3,22 +3,16 @@ import type { ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useGameStore } from '../../store/gameStore';
 import { useUIStore } from '../../store/uiStore';
-import { DECOR_BY_ID } from '../../data/decorData';
+import { DECOR_BY_ID, WATER_DECOR_IDS } from '../../data/decorData';
 import DecorationModel from './Decorations/DecorationModel';
 
 const PLAYER_POS = new THREE.Vector2(0, 7.1);
 const PLAYER_EXCLUSION_RADIUS = 1.6;
 
-const GROUND_RADIUS = 18;
-const GROUND_MARGIN = 1.5; // keep placements a bit inside the grass edge
-
 /** Max screen-space movement (px) between pointer down and up to still count as a tap/click. */
 const TAP_MOVE_THRESHOLD = 8;
 
-/** Decoration ids that are placeable on the water surface (near the pond edge). */
-const WATER_DECOR_IDS = new Set(['lilypad']);
-
-export default function PlacementController({ pondRadius = 6 }: { pondRadius?: number }) {
+export default function PlacementController({ pondRadius = 6, groundRadius = 18 }: { pondRadius?: number; groundRadius?: number }) {
   const buildSelection = useUIStore((s) => s.buildSelection);
   const rotation = useUIStore((s) => s.buildRotation);
   const rotateBuildSelection = useUIStore((s) => s.rotateBuildSelection);
@@ -48,6 +42,9 @@ export default function PlacementController({ pondRadius = 6 }: { pondRadius?: n
 
   const allowWater = WATER_DECOR_IDS.has(buildSelection);
 
+  // Keep placements a bit inside the grass edge, scaling with the island's size.
+  const groundMargin = groundRadius / 12;
+
   const computeValidity = (point: THREE.Vector3): boolean => {
     const dist = Math.hypot(point.x, point.z);
 
@@ -57,12 +54,12 @@ export default function PlacementController({ pondRadius = 6 }: { pondRadius?: n
     }
 
     // Out of bounds (too far from origin)
-    if (dist > GROUND_RADIUS - GROUND_MARGIN) return false;
+    if (dist > groundRadius - groundMargin) return false;
 
     if (allowWater) {
       // Water decorations may sit anywhere from near-center to the grass,
       // but should stay reasonably close to the pond's edge.
-      return dist < GROUND_RADIUS - GROUND_MARGIN;
+      return dist < groundRadius - groundMargin;
     }
 
     // Ground decorations must be outside the pond.
@@ -124,7 +121,7 @@ export default function PlacementController({ pondRadius = 6 }: { pondRadius?: n
         onPointerUp={handlePointerUp}
         visible={false}
       >
-        <circleGeometry args={[GROUND_RADIUS, 64]} />
+        <circleGeometry args={[groundRadius, 64]} />
         <meshBasicMaterial transparent opacity={0} />
       </mesh>
 

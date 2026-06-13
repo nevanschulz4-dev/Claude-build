@@ -1,14 +1,17 @@
 import { create } from 'zustand';
 
 const MIN_DISTANCE = 6;
-const MAX_DISTANCE = 26;
+const MAX_DISTANCE = 50;
 const MIN_POLAR = 0.3;
 const MAX_POLAR = Math.PI / 2.05;
-const PAN_LIMIT = 16;
+const PAN_LIMIT = 32;
 
 const DEFAULT_TARGET: [number, number, number] = [0, 0.5, 0];
-const DEFAULT_DISTANCE = Math.hypot(0, 6.5, 13);
-const DEFAULT_POLAR = Math.acos(6.5 / DEFAULT_DISTANCE);
+/** Default camera distance for fishing spots, which kept their original (smaller) size. */
+export const FISHING_DISTANCE = Math.hypot(0, 6.5, 13);
+/** Default camera distance for the home pond, pulled back further now that it's much larger. */
+export const HOME_DISTANCE = Math.hypot(0, 13, 26);
+const DEFAULT_POLAR = Math.acos(6.5 / FISHING_DISTANCE);
 const DEFAULT_AZIMUTH = Math.atan2(0, 13);
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
@@ -23,14 +26,14 @@ interface CameraControlsState {
   /** Orbit the camera around the look-at point (right-side drag). */
   look: (dAzimuth: number, dPolar: number) => void;
   zoom: (delta: number) => void;
-  resetView: () => void;
+  resetView: (distance?: number) => void;
 }
 
 export const useCameraControls = create<CameraControlsState>((set) => ({
   target: DEFAULT_TARGET,
   azimuth: DEFAULT_AZIMUTH,
   polar: DEFAULT_POLAR,
-  distance: DEFAULT_DISTANCE,
+  distance: HOME_DISTANCE,
 
   pan: (dx, dz) =>
     set((s) => {
@@ -56,11 +59,11 @@ export const useCameraControls = create<CameraControlsState>((set) => ({
       distance: clamp(s.distance + delta, MIN_DISTANCE, MAX_DISTANCE),
     })),
 
-  resetView: () =>
+  resetView: (distance = HOME_DISTANCE) =>
     set({
       target: DEFAULT_TARGET,
       azimuth: DEFAULT_AZIMUTH,
       polar: DEFAULT_POLAR,
-      distance: DEFAULT_DISTANCE,
+      distance,
     }),
 }));

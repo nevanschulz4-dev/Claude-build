@@ -67,6 +67,8 @@ interface EnvironmentProps extends EnvironmentTheme {
   biomeId?: Exclude<LocationId, 'home'>;
   /** Radius of the pond, used to size the surrounding rim. */
   pondRadius?: number;
+  /** Radius of the grassy island, used to size the ground and scatter trees/hills. */
+  groundRadius?: number;
 }
 
 export default function Environment({
@@ -88,11 +90,16 @@ export default function Environment({
   fogFar,
   biomeId,
   pondRadius = 6,
+  groundRadius = 18,
 }: EnvironmentProps) {
   const gradientMap = useToonGradient(4);
   const grassTexture = useGrassTexture();
   const sandTexture = useSandTexture();
   const mudTexture = useMudTexture();
+
+  // Keep tile density consistent as the ground island grows beyond its default size.
+  const groundScale = groundRadius / 18;
+  grassTexture.repeat.set(10 * groundScale, 10 * groundScale);
 
   const timeOfDay = useEnvironmentStore((s) => s.timeOfDay);
   const weather = useEnvironmentStore((s) => s.weather);
@@ -159,9 +166,10 @@ export default function Environment({
   const trees = useMemo(() => {
     const items: { position: [number, number, number]; scale: number; leafColor: string }[] = [];
     const count = 14;
+    const baseR = groundRadius - 1;
     for (let i = 0; i < count; i++) {
       const angle = (i / count) * Math.PI * 2 + Math.sin(i * 1.7) * 0.2;
-      const r = 17 + Math.sin(i * 2.3) * 2.5;
+      const r = baseR + Math.sin(i * 2.3) * 2.5;
       items.push({
         position: [Math.cos(angle) * r, 0, Math.sin(angle) * r],
         scale: 1.1 + ((i * 37) % 10) / 10,
@@ -169,14 +177,15 @@ export default function Environment({
       });
     }
     return items;
-  }, [treeLeafColors]);
+  }, [treeLeafColors, groundRadius]);
 
   const hills = useMemo(() => {
     const items: { position: [number, number, number]; scale: number; color: string }[] = [];
     const count = 6;
+    const baseR = groundRadius + 8;
     for (let i = 0; i < count; i++) {
       const angle = (i / count) * Math.PI * 2 + 0.4;
-      const r = 26 + (i % 3) * 3;
+      const r = baseR + (i % 3) * 3;
       items.push({
         position: [Math.cos(angle) * r, -1, Math.sin(angle) * r],
         scale: 8 + (i % 3) * 3,
@@ -184,7 +193,7 @@ export default function Environment({
       });
     }
     return items;
-  }, [hillColors]);
+  }, [hillColors, groundRadius]);
 
   return (
     <>
@@ -244,7 +253,7 @@ export default function Environment({
 
       {/* Ground island */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.05, 0]} receiveShadow>
-        <circleGeometry args={[18, 64]} />
+        <circleGeometry args={[groundRadius, 64]} />
         <meshToonMaterial map={textures[groundTexture]} gradientMap={gradientMap} color={groundTint ?? '#ffffff'} />
       </mesh>
 
