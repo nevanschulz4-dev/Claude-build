@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import type { LocationId } from '../../data/types';
+import Waterfall from './Waterfall';
 
 interface LandmarkProps {
   gradientMap: THREE.Texture;
@@ -119,6 +120,7 @@ function RiverFeatures({ gradientMap }: LandmarkProps) {
           <meshToonMaterial color="#9CA3AF" gradientMap={gradientMap} />
         </mesh>
       ))}
+      <Waterfall gradientMap={gradientMap} />
     </>
   );
 }
