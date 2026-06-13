@@ -110,3 +110,24 @@ export function PathStoneModel({ preview = false, valid = true }: DecorationMode
     </mesh>
   );
 }
+
+/** A small cluster of rectangular paving slabs for a tidy garden path. */
+export function GardenPaversModel({ preview = false, valid = true }: DecorationModelProps) {
+  const { mat } = useDecorMaterials(preview, valid);
+
+  const slabs: { pos: [number, number, number]; size: [number, number]; rot: number; color: string }[] = [
+    { pos: [-0.18, 0, -0.12], size: [0.34, 0.26], rot: 0.12, color: '#B7BFCB' },
+    { pos: [0.16, 0, 0.08], size: [0.3, 0.24], rot: -0.18, color: '#9AA3AF' },
+    { pos: [-0.06, 0, 0.22], size: [0.26, 0.22], rot: 0.3, color: '#C4CCD6' },
+  ];
+
+  return (
+    <group>
+      {slabs.map((slab, i) => (
+        <mesh key={i} position={[slab.pos[0], 0.025, slab.pos[2]]} rotation={[0, slab.rot, 0]} material={mat(slab.color)} receiveShadow castShadow>
+          <boxGeometry args={[slab.size[0], 0.05, slab.size[1]]} />
+        </mesh>
+      ))}
+    </group>
+  );
+}

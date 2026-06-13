@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { ReedModel, LilypadModel, BonsaiModel, FlowerbedModel } from './PlantModels';
 import { RockSmallModel, RockArchModel, CrystalModel } from './RockModels';
 import { BridgeModel, PagodaModel, FountainModel, WindmillModel, WishingWellModel } from './StructureModels';
-import { LanternModel, FireflyJarModel, TikiTorchModel, PathStoneModel } from './LightModels';
+import { LanternModel, FireflyJarModel, TikiTorchModel, PathStoneModel, GardenPaversModel } from './LightModels';
 import { FlamingoModel, UmbrellaModel, GnomeModel, BirdhouseModel, TreasureChestModel, PicnicModel } from './FunModels';
 
 export interface DecorationModelComponentProps {
@@ -37,6 +37,7 @@ const MODEL_BY_ID: Record<string, ModelComponent> = {
   'firefly-jar': FireflyJarModel,
   'tiki-torch': TikiTorchModel,
   'path-stone': PathStoneModel,
+  'garden-pavers': GardenPaversModel,
   flamingo: FlamingoModel,
   umbrella: UmbrellaModel,
   gnome: GnomeModel,

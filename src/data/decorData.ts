@@ -146,6 +146,15 @@ export const DECORATIONS: DecorationDef[] = [
     description: 'Flat stones to create a walking path.',
   },
   {
+    id: 'garden-pavers',
+    name: 'Garden Pavers',
+    category: 'path',
+    cost: 45,
+    ratingValue: 2,
+    footprint: 0.6,
+    description: 'A neat cluster of stone slabs for a tidy path.',
+  },
+  {
     id: 'flamingo',
     name: 'Flamingo Statue',
     category: 'fun',

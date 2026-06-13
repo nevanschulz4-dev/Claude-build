@@ -33,6 +33,7 @@ const DECOR_ICONS: Record<string, string> = {
   'firefly-jar': '🫙',
   'tiki-torch': '🔥',
   'path-stone': '🟫',
+  'garden-pavers': '◽',
   flamingo: '🦩',
   umbrella: '⛱️',
   gnome: '🧙',
