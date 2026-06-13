@@ -6,6 +6,7 @@ import type { EnvironmentTheme, LocationId } from '../../data/types';
 import BiomeLandmarks from './BiomeLandmarks';
 import Birds from './Birds';
 import Rain from './Rain';
+import ShootingStars from './ShootingStars';
 import { useEnvironmentStore, getDayFactor } from '../../store/environmentStore';
 import * as THREE from 'three';
 
@@ -186,6 +187,9 @@ export default function Environment({
 
       {/* Stars fade in once the sun dips below the horizon */}
       {isNight && <Stars radius={120} depth={60} count={2500} factor={4} saturation={0} fade speed={0.3} />}
+
+      {/* Occasional shooting stars streak across the night sky */}
+      {isNight && <ShootingStars />}
 
       {/* Moon hangs over the pond at night */}
       {isNight && (
