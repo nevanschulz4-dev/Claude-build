@@ -48,6 +48,11 @@ export default function FishModel({ species, swimming = false, phase = 0 }: Fish
     () => new THREE.MeshToonMaterial({ color: species.secondaryColor, gradientMap }),
     [species.secondaryColor, gradientMap],
   );
+  // Thin inverted-hull "ink" outline for a clean, chunky toon look.
+  const outlineMat = useMemo(
+    () => new THREE.MeshBasicMaterial({ color: '#1a1a22', side: THREE.BackSide }),
+    [],
+  );
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime() * (swimming ? 4 : 2.5) + phase;
@@ -68,27 +73,44 @@ export default function FishModel({ species, swimming = false, phase = 0 }: Fish
     <group ref={groupRef} scale={s}>
       {/* Body */}
       <mesh material={bodyMat} castShadow scale={bodyScale}>
-        <sphereGeometry args={[1, 16, 12]} />
+        <sphereGeometry args={[1, 24, 18]} />
       </mesh>
+
+      {/* Inverted-hull outline traces the body silhouette for a chunky toon look */}
+      {!isGlass && (
+        <mesh material={outlineMat} scale={[bodyScale[0] * 1.06, bodyScale[1] * 1.06, bodyScale[2] * 1.06]}>
+          <sphereGeometry args={[1, 24, 18]} />
+        </mesh>
+      )}
 
       {/* Belly accent */}
       <mesh material={accentMat} position={[0, -bodyScale[1] * 0.45, 0]} scale={[bodyScale[0] * 0.85, bodyScale[1] * 0.45, bodyScale[2] * 0.85]}>
-        <sphereGeometry args={[1, 14, 10]} />
+        <sphereGeometry args={[1, 18, 14]} />
       </mesh>
 
-      {/* Eyes: white sclera + dark pupil + glint, for a friendly toon look */}
+      {/* Glossy highlight on the back for a wet, polished sheen */}
+      <mesh
+        position={[bodyScale[0] * 0.2, bodyScale[1] * 0.6, bodyScale[2] * 0.45]}
+        rotation={[0, 0.4, 0.3]}
+        scale={[bodyScale[0] * 0.32, bodyScale[1] * 0.18, bodyScale[2] * 0.12]}
+      >
+        <sphereGeometry args={[1, 10, 8]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.35} depthWrite={false} />
+      </mesh>
+
+      {/* Eyes: large white sclera + dark pupil + glint, for a friendly toon look */}
       {[1, -1].map((side) => (
-        <group key={side} position={[bodyScale[0] * 0.78, bodyScale[1] * 0.25, bodyScale[2] * 0.45 * side]}>
+        <group key={side} position={[bodyScale[0] * 0.8, bodyScale[1] * 0.28, bodyScale[2] * 0.48 * side]}>
           <mesh>
-            <sphereGeometry args={[0.105, 10, 10]} />
+            <sphereGeometry args={[0.135, 14, 14]} />
             <meshToonMaterial color="#fefefe" gradientMap={gradientMap} />
           </mesh>
-          <mesh position={[0.055, 0.012, 0.045 * side]}>
-            <sphereGeometry args={[0.062, 8, 8]} />
+          <mesh position={[0.07, 0.014, 0.05 * side]}>
+            <sphereGeometry args={[0.08, 10, 10]} />
             <meshStandardMaterial color="#1c1c22" />
           </mesh>
-          <mesh position={[0.085, 0.045, 0.07 * side]}>
-            <sphereGeometry args={[0.022, 6, 6]} />
+          <mesh position={[0.105, 0.055, 0.085 * side]}>
+            <sphereGeometry args={[0.03, 6, 6]} />
             <meshBasicMaterial color="#ffffff" />
           </mesh>
         </group>
@@ -105,34 +127,34 @@ export default function FishModel({ species, swimming = false, phase = 0 }: Fish
         {species.feature === 'doubletail' ? (
           <>
             <mesh material={finMat} rotation={[0, 0, Math.PI / 2 + 0.45]} position={[-bodyScale[0] * 0.28, bodyScale[1] * 0.25, 0]}>
-              <coneGeometry args={[bodyScale[1] * 0.75, bodyScale[0] * 0.8, 8]} />
+              <coneGeometry args={[bodyScale[1] * 0.75, bodyScale[0] * 0.8, 12]} />
             </mesh>
             <mesh material={finMat} rotation={[0, 0, Math.PI / 2 - 0.45]} position={[-bodyScale[0] * 0.28, -bodyScale[1] * 0.25, 0]}>
-              <coneGeometry args={[bodyScale[1] * 0.75, bodyScale[0] * 0.8, 8]} />
+              <coneGeometry args={[bodyScale[1] * 0.75, bodyScale[0] * 0.8, 12]} />
             </mesh>
           </>
         ) : species.feature === 'blowhole' ? (
           <mesh material={finMat} rotation={[0, 0, Math.PI / 2]} position={[-bodyScale[0] * 0.3, 0, 0]} scale={[1, 1, 1.8]}>
-            <coneGeometry args={[bodyScale[1] * 1.0, bodyScale[0] * 0.6, 8]} />
+            <coneGeometry args={[bodyScale[1] * 1.0, bodyScale[0] * 0.6, 12]} />
           </mesh>
         ) : (
           <mesh material={finMat} rotation={[0, 0, Math.PI / 2]} position={[-bodyScale[0] * 0.35, 0, 0]}>
-            <coneGeometry args={[bodyScale[1] * 0.9, bodyScale[0] * 0.75, 8]} />
+            <coneGeometry args={[bodyScale[1] * 0.9, bodyScale[0] * 0.75, 12]} />
           </mesh>
         )}
       </group>
 
       {/* Dorsal fin */}
       <mesh material={finMat} position={[0, bodyScale[1] * 0.85, 0]} rotation={[0, 0, Math.PI]}>
-        <coneGeometry args={[bodyScale[0] * 0.35, bodyScale[1] * 0.7, 8]} />
+        <coneGeometry args={[bodyScale[0] * 0.35, bodyScale[1] * 0.7, 12]} />
       </mesh>
 
       {/* Side fins */}
       <mesh ref={finLRef} material={finMat} position={[bodyScale[0] * 0.1, -bodyScale[1] * 0.1, bodyScale[2] * 0.85]} rotation={[Math.PI / 2.4, 0, 0]}>
-        <coneGeometry args={[bodyScale[1] * 0.35, bodyScale[0] * 0.5, 8]} />
+        <coneGeometry args={[bodyScale[1] * 0.35, bodyScale[0] * 0.5, 12]} />
       </mesh>
       <mesh ref={finRRef} material={finMat} position={[bodyScale[0] * 0.1, -bodyScale[1] * 0.1, -bodyScale[2] * 0.85]} rotation={[-Math.PI / 2.4, 0, 0]}>
-        <coneGeometry args={[bodyScale[1] * 0.35, bodyScale[0] * 0.5, 8]} />
+        <coneGeometry args={[bodyScale[1] * 0.35, bodyScale[0] * 0.5, 12]} />
       </mesh>
 
       {/* Whiskers (Pebble Carp) */}
