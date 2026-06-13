@@ -6,6 +6,7 @@ import type { EnvironmentTheme, LocationId } from '../../data/types';
 import BiomeLandmarks from './BiomeLandmarks';
 import Birds from './Birds';
 import Rain from './Rain';
+import Rainbow from './Rainbow';
 import ShootingStars from './ShootingStars';
 import { useEnvironmentStore, getDayFactor } from '../../store/environmentStore';
 import * as THREE from 'three';
@@ -215,6 +216,9 @@ export default function Environment({
 
       {/* Falling rain */}
       {isRaining && <Rain />}
+
+      {/* A rainbow lingers in the sky after a sunny rain clears */}
+      <Rainbow />
 
       {/* Birds glide across the daytime sky */}
       {!isNight && !isRaining && <Birds />}
