@@ -183,6 +183,59 @@ export function GnomeModel({ preview = false, valid = true }: DecorationModelPro
   );
 }
 
+/** Checkered picnic blanket with a wicker basket and a couple of apples. */
+export function PicnicModel({ preview = false, valid = true }: DecorationModelProps) {
+  const { mat } = useDecorMaterials(preview, valid);
+
+  const stripeOffsets = [-0.4, -0.2, 0, 0.2, 0.4];
+
+  return (
+    <group>
+      {/* Blanket */}
+      <mesh position={[0, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]} material={mat('#E0533D')} receiveShadow>
+        <planeGeometry args={[1.2, 1.2]} />
+      </mesh>
+      {/* Checker stripes */}
+      {stripeOffsets.map((x, i) => (
+        <mesh key={`sx-${i}`} position={[x, 0.011, 0]} rotation={[-Math.PI / 2, 0, 0]} material={mat('#F5F0E0')}>
+          <planeGeometry args={[0.1, 1.2]} />
+        </mesh>
+      ))}
+      {stripeOffsets.map((z, i) => (
+        <mesh key={`sz-${i}`} position={[0, 0.012, z]} rotation={[-Math.PI / 2, 0, 0]} material={mat('#F5F0E0')}>
+          <planeGeometry args={[1.2, 0.1]} />
+        </mesh>
+      ))}
+      {/* Wicker basket */}
+      <group position={[0.32, 0, 0.22]}>
+        <mesh position={[0, 0.11, 0]} material={mat('#A8804F')} castShadow>
+          <cylinderGeometry args={[0.18, 0.14, 0.22, 10]} />
+        </mesh>
+        <mesh position={[0, 0.23, 0]} material={mat('#7A5A30')} castShadow>
+          <cylinderGeometry args={[0.19, 0.19, 0.04, 10]} />
+        </mesh>
+        <mesh position={[0, 0.35, 0]} rotation={[Math.PI / 2, 0, 0]} material={mat('#7A5A30')}>
+          <torusGeometry args={[0.14, 0.02, 6, 12, Math.PI]} />
+        </mesh>
+      </group>
+      {/* Apples */}
+      {[
+        [-0.28, 0.07, -0.18],
+        [-0.12, 0.07, -0.32],
+      ].map((p, i) => (
+        <group key={i} position={p as [number, number, number]}>
+          <mesh material={mat('#E0392B')} castShadow>
+            <sphereGeometry args={[0.07, 10, 8]} />
+          </mesh>
+          <mesh position={[0, 0.08, 0]} rotation={[0, 0, 0.3]} material={mat('#3FA34D')}>
+            <coneGeometry args={[0.025, 0.06, 4]} />
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+
 /** Treasure chest: open wooden chest with gold trim, overflowing with coins and gems. */
 export function TreasureChestModel({ preview = false, valid = true }: DecorationModelProps) {
   const { mat } = useDecorMaterials(preview, valid);

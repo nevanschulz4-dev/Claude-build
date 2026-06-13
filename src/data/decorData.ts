@@ -190,6 +190,15 @@ export const DECORATIONS: DecorationDef[] = [
     footprint: 0.7,
     description: 'An open chest overflowing with glittering coins and gems.',
   },
+  {
+    id: 'picnic',
+    name: 'Picnic Set',
+    category: 'fun',
+    cost: 140,
+    ratingValue: 8,
+    footprint: 0.9,
+    description: 'A checkered blanket with a wicker basket and fresh apples.',
+  },
 ];
 
 export const DECOR_BY_ID: Record<string, DecorationDef> = Object.fromEntries(
