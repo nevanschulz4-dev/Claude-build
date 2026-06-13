@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import * as THREE from 'three';
 import type { LocationId } from '../../data/types';
 import Waterfall from './Waterfall';
+import Frog from './Frog';
 
 interface LandmarkProps {
   gradientMap: THREE.Texture;
@@ -297,6 +298,8 @@ function SwampFeatures({ gradientMap }: LandmarkProps) {
           <meshToonMaterial color="#4A5D3A" gradientMap={gradientMap} />
         </mesh>
       ))}
+      <Frog pads={lilypads} gradientMap={gradientMap} startIndex={0} seed={0.7} />
+      <Frog pads={lilypads} gradientMap={gradientMap} startIndex={3} seed={4.2} />
     </>
   );
 }
