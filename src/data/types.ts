@@ -29,7 +29,8 @@ export type FishBodyShape =
   | 'triangle' // tall, angular angelfish/tang
   | 'flat' // low and wide flatfish/ray
   | 'puffer' // near-spherical balloon
-  | 'torpedo'; // sleek, streamlined hunter
+  | 'torpedo' // sleek, streamlined hunter
+  | 'serpent'; // long, thick-bodied sea monster / dragon
 
 /** Distinct swim motion used to animate a species in the pond */
 export type SwimPattern = 'orbit' | 'hover' | 'dart' | 'figure8' | 'serpentine' | 'glide';

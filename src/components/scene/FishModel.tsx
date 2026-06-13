@@ -23,6 +23,7 @@ const BODY_SCALE: Record<FishBodyShape, [number, number, number]> = {
   flat: [1.2, 0.26, 0.92],
   puffer: [0.74, 0.82, 0.66],
   torpedo: [1.7, 0.46, 0.4],
+  serpent: [2.1, 0.5, 0.42],
 };
 
 /** Taller dorsal fin for some silhouettes, shorter for flat/eel bodies. */
@@ -33,6 +34,7 @@ const DORSAL_HEIGHT: Partial<Record<FishBodyShape, number>> = {
   flat: 0.4,
   eel: 0.55,
   puffer: 0.7,
+  serpent: 1.5,
 };
 
 // --- Shared geometry. All fish reuse these; per-species variety comes from scale, color, pattern and add-ons. ---
@@ -147,6 +149,7 @@ function defaultFinStyle(shape: FishBodyShape): FishFinStyle {
   switch (shape) {
     case 'long':
     case 'torpedo':
+    case 'serpent':
       return 'forked';
     case 'eel':
     case 'puffer':
@@ -655,16 +658,15 @@ export default function FishModel({ species, swimming = false, phase = 0, showAu
         </>
       )}
 
-      {/* Phoenix Flarefin — a crown of flames and a streaming fiery tail */}
+      {/* Phoenix Flarefin — a sweeping crest of flames trailing back from the head */}
       {species.id === 'phoenixflarefin' &&
         ([
-          [-0.3, 1.0, '#FF6B00'],
-          [-0.05, 1.25, '#FF4500'],
-          [0.15, 1.5, '#FF8C00'],
-          [0.35, 1.2, '#FFD700'],
+          [-0.25, 0.78, '#FF6B00'],
+          [-0.02, 1.0, '#FF4500'],
+          [0.22, 1.2, '#FFD700'],
         ] as [number, number, string][]).map((f, i) => (
-          <mesh key={i} position={[bodyScale[0] * f[0], bodyScale[1] * f[1], 0]} rotation={[0, 0, Math.PI + f[0] * 0.6]} scale={[1, 1, 0.2]}>
-            <coneGeometry args={[bodyScale[0] * 0.16, bodyScale[1] * 1.1, 5]} />
+          <mesh key={i} position={[bodyScale[0] * f[0], bodyScale[1] * f[1], 0]} rotation={[0, 0, Math.PI - 0.32]} scale={[1, 1, 0.22]}>
+            <coneGeometry args={[bodyScale[0] * 0.14, bodyScale[1] * 1.05, 5]} />
             <meshStandardMaterial color={f[2]} emissive={f[2]} emissiveIntensity={0.45} />
           </mesh>
         ))}
@@ -676,9 +678,17 @@ export default function FishModel({ species, swimming = false, phase = 0, showAu
           </mesh>
         ))}
 
-      {/* Golden Drakefin — an eastern dragon: horns, trailing barbels, spiked ridge */}
+      {/* Golden Drakefin — an eastern dragon: spined back ridge, horns, trailing barbels */}
       {species.id === 'goldendrake' && (
         <>
+          {[-0.55, -0.38, -0.2, -0.02, 0.16, 0.34, 0.5].map((sx, i) => {
+            const k = Math.sin((i / 6) * Math.PI);
+            return (
+              <mesh key={`s${i}`} material={accentMat} position={[bodyScale[0] * sx, bodyScale[1] * 0.95, 0]} rotation={[0, 0, Math.PI - 0.08]}>
+                <coneGeometry args={[bodyScale[0] * 0.05, bodyScale[1] * (0.4 + k * 0.9), 5]} />
+              </mesh>
+            );
+          })}
           {[1, -1].map((sd) => (
             <mesh key={`h${sd}`} material={accentMat} position={[bodyScale[0] * 0.78, bodyScale[1] * 0.62, bodyScale[2] * 0.3 * sd]} rotation={[0, 0, -1.3]}>
               <coneGeometry args={[bodyScale[1] * 0.1, bodyScale[1] * 0.85, 6]} />
@@ -687,11 +697,6 @@ export default function FishModel({ species, swimming = false, phase = 0, showAu
           {[1, -1].map((sd) => (
             <mesh key={`b${sd}`} material={accentMat} position={[bodyScale[0] * 1.0, -bodyScale[1] * 0.1, bodyScale[2] * 0.2 * sd]} rotation={[0, 0, 0.4]}>
               <cylinderGeometry args={[0.015, 0.03, bodyScale[0] * 1.1, 6]} />
-            </mesh>
-          ))}
-          {[-0.3, -0.1, 0.1, 0.3].map((sx, i) => (
-            <mesh key={`s${i}`} material={accentMat} position={[bodyScale[0] * sx, bodyScale[1] * 0.95, 0]} rotation={[0, 0, Math.PI]}>
-              <coneGeometry args={[bodyScale[0] * 0.05, bodyScale[1] * 0.5, 5]} />
             </mesh>
           ))}
         </>
