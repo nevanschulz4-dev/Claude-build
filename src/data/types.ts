@@ -20,15 +20,29 @@ export const RARITY_GLOW: Record<Rarity, string> = {
   legendary: '#ffd700',
 };
 
-export type FishBodyShape = 'classic' | 'round' | 'long' | 'wide' | 'eel';
+export type FishBodyShape =
+  | 'classic' // rounded oval perch/bass
+  | 'round' // chubby and short
+  | 'long' // elongated cruiser
+  | 'wide' // broad-bodied, laterally chunky
+  | 'eel' // serpentine ribbon
+  | 'triangle' // tall, angular angelfish/tang
+  | 'flat' // low and wide flatfish/ray
+  | 'puffer' // near-spherical balloon
+  | 'torpedo'; // sleek, streamlined hunter
 
 /** Distinct swim motion used to animate a species in the pond */
 export type SwimPattern = 'orbit' | 'hover' | 'dart' | 'figure8' | 'serpentine' | 'glide';
 
+/** Surface markings painted onto the body, independent of silhouette. */
+export type FishPattern = 'stripes' | 'bands' | 'spots' | 'patches';
+
+/** Shape of the caudal (tail) fin, which strongly changes a fish's read. */
+export type FishFinStyle = 'fan' | 'forked' | 'flowy' | 'round' | 'lunate';
+
 /** Extra decorative geometry that makes a species visually distinct */
 export type FishFeature =
   | 'whiskers'
-  | 'stripes'
   | 'glass'
   | 'doubletail'
   | 'rings'
@@ -36,13 +50,13 @@ export type FishFeature =
   | 'crystals'
   | 'wings'
   | 'blowhole'
-  | 'spots'
   | 'antenna'
   | 'sail'
   | 'horn'
   | 'mane'
   | 'crown'
-  | 'halo';
+  | 'halo'
+  | 'spikes';
 
 export interface FishSpecies {
   id: string;
@@ -60,6 +74,10 @@ export interface FishSpecies {
   swimPattern: SwimPattern;
   /** Extra geometry that gives the species a unique silhouette */
   feature?: FishFeature;
+  /** Surface markings painted across the body */
+  pattern?: FishPattern;
+  /** Shape of the tail fin. Falls back to a per-bodyShape default. */
+  finStyle?: FishFinStyle;
   /** Cost to unlock/stock this species in the shop. 0 = available from the start */
   unlockCost: number;
   description: string;
