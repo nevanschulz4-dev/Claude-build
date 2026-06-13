@@ -18,7 +18,6 @@ interface SwimPath {
   depth: number;
   direction: number;
   pattern: SwimPattern;
-  displayScale: number;
 }
 
 /** Computes the world position for a fish at time t, per its swim pattern. */
@@ -143,11 +142,9 @@ function SwimmingFish({ speciesId, path }: { speciesId: string; path: SwimPath }
   return (
     <>
       <group ref={groupRef}>
-        <group scale={path.displayScale}>
-          <FishModel species={species} swimming phase={path.phase} />
-        </group>
+        <FishModel species={species} swimming phase={path.phase} />
       </group>
-      <mesh ref={shadowRef} rotation={[-Math.PI / 2, 0, 0]} scale={species.size * path.displayScale * 0.9}>
+      <mesh ref={shadowRef} rotation={[-Math.PI / 2, 0, 0]} scale={species.size * 0.9}>
         <circleGeometry args={[0.55, 16]} />
         <meshBasicMaterial color="#03101a" transparent opacity={0.22} depthWrite={false} />
       </mesh>
@@ -201,9 +198,6 @@ export default function PondFishLayer({ pondRadius = POND_BASE_RADIUS }: { pondR
           break;
       }
 
-      // Tame oversized legendaries so a full pond stays readable; small fish keep their size.
-      const displayScale = species ? Math.min(1, 1.25 / species.size) : 1;
-
       map[id] = {
         centerX,
         centerZ,
@@ -214,7 +208,6 @@ export default function PondFishLayer({ pondRadius = POND_BASE_RADIUS }: { pondR
         depth: -0.14 - ((seed * 5) % 10) / 50,
         direction: i % 2 === 0 ? 1 : -1,
         pattern,
-        displayScale,
       };
     });
     return map;
