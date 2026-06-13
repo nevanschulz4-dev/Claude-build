@@ -35,6 +35,7 @@ const DECOR_ICONS: Record<string, string> = {
   umbrella: '⛱️',
   gnome: '🧙',
   birdhouse: '🏠',
+  'treasure-chest': '🪙',
 };
 
 export default function BuildPanel() {

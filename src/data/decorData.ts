@@ -163,6 +163,15 @@ export const DECORATIONS: DecorationDef[] = [
     footprint: 0.5,
     description: 'A cozy little house that draws birds to your pond.',
   },
+  {
+    id: 'treasure-chest',
+    name: 'Treasure Chest',
+    category: 'fun',
+    cost: 280,
+    ratingValue: 13,
+    footprint: 0.7,
+    description: 'An open chest overflowing with glittering coins and gems.',
+  },
 ];
 
 export const DECOR_BY_ID: Record<string, DecorationDef> = Object.fromEntries(

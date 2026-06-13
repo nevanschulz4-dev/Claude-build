@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
 import { useDecorMaterials, type DecorationModelProps } from './shared';
 
@@ -178,6 +179,74 @@ export function GnomeModel({ preview = false, valid = true }: DecorationModelPro
       <mesh position={[0, 0.5, 0]} material={mat('#C9302C')} castShadow>
         <cylinderGeometry args={[0.15, 0.17, 0.03, 12]} />
       </mesh>
+    </group>
+  );
+}
+
+/** Treasure chest: open wooden chest with gold trim, overflowing with coins and gems. */
+export function TreasureChestModel({ preview = false, valid = true }: DecorationModelProps) {
+  const { mat } = useDecorMaterials(preview, valid);
+  const gemRef = useRef<THREE.Mesh>(null);
+
+  useFrame(({ clock }) => {
+    if (gemRef.current) {
+      gemRef.current.rotation.y = clock.getElapsedTime() * 0.8;
+    }
+  });
+
+  const coins = [
+    { x: -0.12, z: 0.18, r: 0.4 },
+    { x: 0.05, z: 0.24, r: 1.1 },
+    { x: 0.18, z: 0.15, r: 2.3 },
+    { x: -0.02, z: 0.28, r: 0.7 },
+    { x: 0.12, z: 0.3, r: 1.8 },
+  ];
+
+  return (
+    <group>
+      {/* Chest base */}
+      <mesh position={[0, 0.15, 0]} material={mat('#6B4A2B')} castShadow receiveShadow>
+        <boxGeometry args={[0.52, 0.3, 0.36]} />
+      </mesh>
+      {/* Gold trim bands */}
+      <mesh position={[0, 0.04, 0]} material={mat('#E8A24C')} castShadow>
+        <boxGeometry args={[0.54, 0.05, 0.38]} />
+      </mesh>
+      <mesh position={[0, 0.26, 0]} material={mat('#E8A24C')} castShadow>
+        <boxGeometry args={[0.54, 0.05, 0.38]} />
+      </mesh>
+      {/* Lid, hinged open at the back */}
+      <group position={[0, 0.3, -0.18]} rotation={[-1.15, 0, 0]}>
+        <mesh position={[0, 0.07, 0.18]} material={mat('#7A5530')} castShadow>
+          <boxGeometry args={[0.54, 0.14, 0.38]} />
+        </mesh>
+        <mesh position={[0, 0.13, 0.18]} material={mat('#E8A24C')} castShadow>
+          <boxGeometry args={[0.56, 0.04, 0.4]} />
+        </mesh>
+      </group>
+      {/* Latch */}
+      <mesh position={[0, 0.2, 0.181]} material={mat('#FFD166')} castShadow>
+        <boxGeometry args={[0.08, 0.08, 0.02]} />
+      </mesh>
+
+      {/* Spilling coins */}
+      {coins.map((c, i) => (
+        <mesh key={i} position={[c.x, 0.305, c.z]} rotation={[Math.PI / 2 + 0.3, c.r, 0]} material={mat('#FFD166')} castShadow>
+          <cylinderGeometry args={[0.06, 0.06, 0.015, 12]} />
+        </mesh>
+      ))}
+
+      {/* Gems among the coins */}
+      <mesh position={[0.02, 0.34, 0.22]} scale={0.06} material={mat('#FF5C7A', { emissive: '#FF8FA8', emissiveIntensity: 0.5 })} castShadow>
+        <octahedronGeometry args={[1, 0]} />
+      </mesh>
+      <mesh ref={gemRef} position={[-0.1, 0.33, 0.24]} scale={0.07} material={mat('#4DD0E1', { emissive: '#8FF0FF', emissiveIntensity: 0.5 })} castShadow>
+        <octahedronGeometry args={[1, 0]} />
+      </mesh>
+
+      {!preview && (
+        <Sparkles position={[0, 0.35, 0.2]} count={10} scale={[0.4, 0.2, 0.3]} size={2} speed={0.3} color="#FFE9A8" />
+      )}
     </group>
   );
 }

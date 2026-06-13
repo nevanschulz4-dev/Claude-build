@@ -4,7 +4,7 @@ import { ReedModel, LilypadModel, BonsaiModel, FlowerbedModel } from './PlantMod
 import { RockSmallModel, RockArchModel, CrystalModel } from './RockModels';
 import { BridgeModel, PagodaModel, FountainModel } from './StructureModels';
 import { LanternModel, FireflyJarModel, TikiTorchModel, PathStoneModel } from './LightModels';
-import { FlamingoModel, UmbrellaModel, GnomeModel, BirdhouseModel } from './FunModels';
+import { FlamingoModel, UmbrellaModel, GnomeModel, BirdhouseModel, TreasureChestModel } from './FunModels';
 
 export interface DecorationModelComponentProps {
   position?: [number, number, number];
@@ -39,6 +39,7 @@ const MODEL_BY_ID: Record<string, ModelComponent> = {
   umbrella: UmbrellaModel,
   gnome: GnomeModel,
   birdhouse: BirdhouseModel,
+  'treasure-chest': TreasureChestModel,
 };
 
 /**
