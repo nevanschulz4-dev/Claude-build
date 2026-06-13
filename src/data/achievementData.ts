@@ -1,5 +1,6 @@
 import type { Rarity } from './types';
 import { RATING_FOR_MAX_SIZE } from '../utils/pond';
+import { FISH_SPECIES } from './fishData';
 
 export interface AchievementContext {
   totalCatches: number;
@@ -85,10 +86,10 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   {
     id: 'collector-30',
     name: 'Complete Fishdex',
-    description: 'Discover all 30 fish species',
+    description: `Discover all ${FISH_SPECIES.length} fish species`,
     icon: '🌟',
     reward: 2000,
-    target: 30,
+    target: FISH_SPECIES.length,
     progress: (ctx) => ctx.speciesDiscovered,
   },
   {
