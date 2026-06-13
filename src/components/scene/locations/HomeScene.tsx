@@ -12,6 +12,7 @@ import FloatingLeaves from '../FloatingLeaves';
 import Fireflies from '../Fireflies';
 import Turtle from '../Turtle';
 import Ducks from '../Duck';
+import Butterflies from '../Butterflies';
 import RainRipples from '../RainRipples';
 import { getPondRadius } from '../../../utils/pond';
 
@@ -34,6 +35,7 @@ export default function HomeScene() {
       <RainRipples pondRadius={pondRadius} />
       <Turtle pondRadius={pondRadius} />
       <Ducks pondRadius={pondRadius} />
+      <Butterflies pondRadius={pondRadius} />
       <PondFishLayer pondRadius={pondRadius} />
       <DecorationsLayer />
       <PlacementController pondRadius={pondRadius} />
