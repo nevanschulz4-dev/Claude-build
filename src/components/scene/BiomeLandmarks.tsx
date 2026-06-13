@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import type { LocationId } from '../../data/types';
 import Waterfall from './Waterfall';
 import Frog from './Frog';
+import Rowboat from './Rowboat';
 
 interface LandmarkProps {
   gradientMap: THREE.Texture;
@@ -317,6 +318,7 @@ export default function BiomeLandmarks({ biomeId, gradientMap }: BiomeLandmarksP
         <>
           <Dock gradientMap={gradientMap} />
           <Mountains gradientMap={gradientMap} />
+          <Rowboat gradientMap={gradientMap} />
         </>
       );
     case 'river':
