@@ -4,6 +4,7 @@ import type { LocationId } from '../../data/types';
 import Waterfall from './Waterfall';
 import Frog from './Frog';
 import Rowboat from './Rowboat';
+import Seagulls from './Seagulls';
 
 interface LandmarkProps {
   gradientMap: THREE.Texture;
@@ -239,6 +240,7 @@ function OceanFeatures({ gradientMap }: LandmarkProps) {
           <CoralCluster gradientMap={gradientMap} />
         </group>
       ))}
+      <Seagulls />
     </>
   );
 }
