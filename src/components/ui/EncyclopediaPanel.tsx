@@ -5,6 +5,17 @@ import { RARITY_COLORS, RARITY_ORDER } from '../../data/types';
 import type { Rarity } from '../../data/types';
 import { LOCATION_BY_ID } from '../../data/locationData';
 
+// Pre-rendered portraits of each species, keyed by id (e.g. '.../sunfin.png').
+const FISH_THUMBS = import.meta.glob('../../assets/fish/*.png', {
+  eager: true,
+  import: 'default',
+}) as Record<string, string>;
+
+function thumbFor(id: string): string | undefined {
+  const key = Object.keys(FISH_THUMBS).find((k) => k.endsWith(`/${id}.png`));
+  return key ? FISH_THUMBS[key] : undefined;
+}
+
 const RARITY_LABEL: Record<Rarity, string> = {
   common: 'Common',
   uncommon: 'Uncommon',
@@ -57,14 +68,28 @@ export default function EncyclopediaPanel() {
           const unlocked = unlockedFishIds.includes(sp.id);
           const caught = caughtSpeciesIds.includes(sp.id);
           const known = unlocked || caught;
+          const thumb = thumbFor(sp.id);
 
           return (
             <div key={sp.id} className={`item-card encyclopedia-card ${caught ? 'discovered' : ''}`}>
-              <div
-                className="item-icon"
-                style={{ background: known ? sp.primaryColor : '#2a2f45', filter: caught ? 'none' : 'grayscale(1) brightness(0.6)' }}
-              >
-                {caught ? '🐟' : known ? '🔒' : '❓'}
+              <div className="item-icon fish-portrait">
+                {thumb ? (
+                  <img
+                    src={thumb}
+                    alt={known ? sp.name : 'Undiscovered fish'}
+                    className="fish-thumb"
+                    style={{
+                      filter: caught
+                        ? 'none'
+                        : unlocked
+                          ? 'saturate(0.85) brightness(0.92)'
+                          : 'brightness(0) opacity(0.55)',
+                    }}
+                  />
+                ) : (
+                  <span className="fish-thumb-fallback">{caught ? '🐟' : known ? '🔒' : '❓'}</span>
+                )}
+                {!known && <span className="fish-thumb-q">?</span>}
               </div>
               <div className="rarity-badge" style={{ background: RARITY_COLORS[sp.rarity] }}>
                 {RARITY_LABEL[sp.rarity]}
