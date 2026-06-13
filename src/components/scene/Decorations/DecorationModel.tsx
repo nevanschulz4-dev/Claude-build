@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 import * as THREE from 'three';
 import { ReedModel, LilypadModel, BonsaiModel, FlowerbedModel } from './PlantModels';
 import { RockSmallModel, RockArchModel, CrystalModel } from './RockModels';
-import { BridgeModel, PagodaModel, FountainModel, WindmillModel } from './StructureModels';
+import { BridgeModel, PagodaModel, FountainModel, WindmillModel, WishingWellModel } from './StructureModels';
 import { LanternModel, FireflyJarModel, TikiTorchModel, PathStoneModel } from './LightModels';
 import { FlamingoModel, UmbrellaModel, GnomeModel, BirdhouseModel, TreasureChestModel } from './FunModels';
 
@@ -32,6 +32,7 @@ const MODEL_BY_ID: Record<string, ModelComponent> = {
   pagoda: PagodaModel,
   fountain: FountainModel,
   windmill: WindmillModel,
+  'wishing-well': WishingWellModel,
   lantern: LanternModel,
   'firefly-jar': FireflyJarModel,
   'tiki-torch': TikiTorchModel,

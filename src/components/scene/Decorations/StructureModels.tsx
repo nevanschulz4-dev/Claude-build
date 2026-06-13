@@ -136,6 +136,54 @@ export function FountainModel({ preview = false, valid = true }: DecorationModel
   );
 }
 
+/** Stone wishing well with a peaked roof and a bucket that sways gently on its rope. */
+export function WishingWellModel({ preview = false, valid = true }: DecorationModelProps) {
+  const { mat } = useDecorMaterials(preview, valid);
+  const bucketRef = useRef<THREE.Group>(null);
+
+  useFrame(({ clock }) => {
+    if (bucketRef.current && !preview) {
+      bucketRef.current.rotation.z = Math.sin(clock.getElapsedTime() * 1.4) * 0.08;
+    }
+  });
+
+  return (
+    <group>
+      {/* Stone ring */}
+      <mesh position={[0, 0.2, 0]} material={mat('#A8AFBC')} castShadow receiveShadow>
+        <cylinderGeometry args={[0.36, 0.4, 0.4, 14]} />
+      </mesh>
+      <mesh position={[0, 0.41, 0]} material={mat('#3A2A1A')}>
+        <cylinderGeometry args={[0.3, 0.3, 0.04, 14]} />
+      </mesh>
+      {/* Roof posts */}
+      <mesh position={[-0.3, 0.66, 0]} material={mat('#8B5E34')} castShadow>
+        <cylinderGeometry args={[0.05, 0.06, 0.92, 8]} />
+      </mesh>
+      <mesh position={[0.3, 0.66, 0]} material={mat('#8B5E34')} castShadow>
+        <cylinderGeometry args={[0.05, 0.06, 0.92, 8]} />
+      </mesh>
+      {/* Roof */}
+      <mesh position={[0, 1.18, 0]} rotation={[0, Math.PI / 4, 0]} material={mat('#9C5B3C')} castShadow>
+        <coneGeometry args={[0.5, 0.36, 4]} />
+      </mesh>
+      {/* Crossbeam holding the rope spool */}
+      <mesh position={[0, 1.02, 0]} rotation={[0, 0, Math.PI / 2]} material={mat('#7A4A2B')} castShadow>
+        <cylinderGeometry args={[0.03, 0.03, 0.64, 6]} />
+      </mesh>
+      {/* Rope + bucket */}
+      <group ref={bucketRef} position={[0, 1.02, 0]}>
+        <mesh position={[0, -0.28, 0]} material={mat('#C9A876')}>
+          <cylinderGeometry args={[0.012, 0.012, 0.56, 4]} />
+        </mesh>
+        <mesh position={[0, -0.56, 0]} material={mat('#8B5E34')} castShadow>
+          <cylinderGeometry args={[0.1, 0.08, 0.16, 10]} />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
 /** Tapered tower with a conical roof and four slowly spinning blades. */
 export function WindmillModel({ preview = false, valid = true }: DecorationModelProps) {
   const { mat } = useDecorMaterials(preview, valid);

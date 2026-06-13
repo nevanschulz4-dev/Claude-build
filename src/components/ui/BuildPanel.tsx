@@ -28,6 +28,7 @@ const DECOR_ICONS: Record<string, string> = {
   pagoda: '🏯',
   fountain: '⛲',
   windmill: '🎡',
+  'wishing-well': '🪣',
   lantern: '🏮',
   'firefly-jar': '🫙',
   'tiki-torch': '🔥',

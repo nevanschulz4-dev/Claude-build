@@ -101,6 +101,15 @@ export const DECORATIONS: DecorationDef[] = [
     description: 'A charming windmill with slowly spinning blades.',
   },
   {
+    id: 'wishing-well',
+    name: 'Wishing Well',
+    category: 'structure',
+    cost: 380,
+    ratingValue: 17,
+    footprint: 1.2,
+    description: 'A quaint stone well with a bucket on a rope.',
+  },
+  {
     id: 'lantern',
     name: 'Glowing Lantern',
     category: 'light',
