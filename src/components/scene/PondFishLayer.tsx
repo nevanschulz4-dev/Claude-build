@@ -161,16 +161,21 @@ const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 
 export default function PondFishLayer({ pondRadius = POND_BASE_RADIUS }: { pondRadius?: number }) {
   const unlockedFishIds = useGameStore((s) => s.unlockedFishIds);
+  const hiddenPondFishIds = useGameStore((s) => s.hiddenPondFishIds);
+  const displayedFishIds = useMemo(
+    () => unlockedFishIds.filter((id) => !hiddenPondFishIds.includes(id)),
+    [unlockedFishIds, hiddenPondFishIds],
+  );
 
   const paths = useMemo(() => {
     const map: Record<string, SwimPath> = {};
-    const n = unlockedFishIds.length;
+    const n = displayedFishIds.length;
     // Stations fill the pond out to this fraction of the radius (leaving a margin at the rim).
     const fillRadius = pondRadius * 0.8;
     // Local loop size shrinks as the pond fills up, so crowded ponds stay tidy.
     const loop = THREE.MathUtils.clamp(pondRadius / Math.sqrt(n + 1) * 0.4, 0.35, 1.1);
 
-    unlockedFishIds.forEach((id, i) => {
+    displayedFishIds.forEach((id, i) => {
       const species = FISH_BY_ID[id];
       const pattern: SwimPattern = species?.swimPattern ?? 'orbit';
       const seed = i * 13.37;
@@ -211,11 +216,11 @@ export default function PondFishLayer({ pondRadius = POND_BASE_RADIUS }: { pondR
       };
     });
     return map;
-  }, [unlockedFishIds, pondRadius]);
+  }, [displayedFishIds, pondRadius]);
 
   return (
     <group>
-      {unlockedFishIds.map((id) => (
+      {displayedFishIds.map((id) => (
         <SwimmingFish key={id} speciesId={id} path={paths[id]} />
       ))}
     </group>

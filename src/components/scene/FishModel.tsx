@@ -288,6 +288,27 @@ export default function FishModel({ species, swimming = false, phase = 0 }: Fish
           </mesh>
         ))}
 
+      {/* Jeweled crown of golden spikes (Abyssal Crownshark) */}
+      {species.feature === 'crown' &&
+        [-0.18, -0.06, 0.06, 0.18].map((xOff, idx) => (
+          <mesh
+            key={idx}
+            position={[bodyScale[0] * (0.55 + xOff * 0.4), bodyScale[1] * 0.92, bodyScale[2] * xOff]}
+            rotation={[0, 0, Math.PI]}
+          >
+            <coneGeometry args={[bodyScale[0] * 0.05, bodyScale[1] * (idx === 1 || idx === 2 ? 0.42 : 0.3), 6]} />
+            <meshStandardMaterial color={species.secondaryColor} metalness={0.6} roughness={0.25} />
+          </mesh>
+        ))}
+
+      {/* Glowing halo ring encircling the body (Celestial Koi) */}
+      {species.feature === 'halo' && (
+        <mesh position={[0, bodyScale[1] * 0.55, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[bodyScale[0] * 0.85, 0.025, 8, 24]} />
+          <meshBasicMaterial color={species.secondaryColor} />
+        </mesh>
+      )}
+
       {/* Glow halo for special fish */}
       {species.glow && (
         <mesh scale={[bodyScale[0] * 1.4, bodyScale[1] * 1.4, bodyScale[2] * 1.4]}>

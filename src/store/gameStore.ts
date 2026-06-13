@@ -42,6 +42,8 @@ interface GameState {
   ownedBait: Record<string, number>;
   activeBaitId: string | null;
   lastActiveTime: number;
+  /** Unlocked species the player has chosen to hide from the home pond's display. */
+  hiddenPondFishIds: string[];
 
   // actions
   addMoney: (amount: number) => void;
@@ -50,6 +52,7 @@ interface GameState {
   sellFish: (uid: string) => void;
   sellAll: () => void;
   unlockFish: (speciesId: string, cost: number) => boolean;
+  togglePondFishVisibility: (speciesId: string) => void;
   placeDecoration: (defId: string, position: [number, number, number], rotationY: number) => boolean;
   removeDecoration: (uid: string) => void;
   setWaterTheme: (id: string, cost: number) => boolean;
@@ -85,6 +88,7 @@ export const useGameStore = create<GameState>()(
       visitedLocations: ['home'],
       ownedBait: {},
       activeBaitId: null,
+      hiddenPondFishIds: [],
       lastActiveTime: Date.now(),
 
       addMoney: (amount) => set((s) => ({ money: s.money + amount, totalEarned: s.totalEarned + Math.max(0, amount) })),
@@ -158,6 +162,15 @@ export const useGameStore = create<GameState>()(
         if (money < cost) return false;
         set({ money: money - cost, unlockedFishIds: [...unlockedFishIds, speciesId] });
         return true;
+      },
+
+      togglePondFishVisibility: (speciesId) => {
+        const { hiddenPondFishIds } = get();
+        set({
+          hiddenPondFishIds: hiddenPondFishIds.includes(speciesId)
+            ? hiddenPondFishIds.filter((id) => id !== speciesId)
+            : [...hiddenPondFishIds, speciesId],
+        });
       },
 
       placeDecoration: (defId, position, rotationY) => {

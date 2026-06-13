@@ -40,7 +40,9 @@ export type FishFeature =
   | 'antenna'
   | 'sail'
   | 'horn'
-  | 'mane';
+  | 'mane'
+  | 'crown'
+  | 'halo';
 
 export interface FishSpecies {
   id: string;

@@ -696,6 +696,32 @@
   letter-spacing: 0.5px;
 }
 
+.pond-visibility-toggle {
+  width: 100%;
+  margin-top: 6px;
+  border: none;
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.15s ease;
+}
+
+.pond-visibility-toggle:hover {
+  transform: translateY(-1px);
+}
+
+.pond-visibility-toggle.visible {
+  background: linear-gradient(135deg, #25c481, #1ec0ff);
+  color: #fff;
+}
+
+.pond-visibility-toggle.hidden {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+}
+
 /* ============ Travel panel ============ */
 .travel-icon {
   font-size: 30px;

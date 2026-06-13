@@ -25,6 +25,8 @@ export default function EncyclopediaPanel() {
   const unlockedFishIds = useGameStore((s) => s.unlockedFishIds);
   const caughtSpeciesIds = useGameStore((s) => s.caughtSpeciesIds);
   const bestCatchWeights = useGameStore((s) => s.bestCatchWeights);
+  const hiddenPondFishIds = useGameStore((s) => s.hiddenPondFishIds);
+  const togglePondFishVisibility = useGameStore((s) => s.togglePondFishVisibility);
 
   const species = tab === 'all' ? FISH_SPECIES : FISH_SPECIES.filter((f) => f.rarity === tab);
 
@@ -38,6 +40,9 @@ export default function EncyclopediaPanel() {
           🔓 Unlocked: {unlockedFishIds.length}/{FISH_SPECIES.length}
         </div>
       </div>
+      <p className="build-intro">
+        Toggle <strong>In Pond</strong> on an unlocked species to choose which fish swim in your home pond.
+      </p>
 
       <div className="tab-row">
         {TABS.map((t) => (
@@ -88,6 +93,14 @@ export default function EncyclopediaPanel() {
                 <span className="item-cost">{caught ? `💰 ~$${sp.baseValue}` : ' '}</span>
                 {caught && <span className="owned-badge">Caught!</span>}
               </div>
+              {unlocked && (
+                <button
+                  className={`pond-visibility-toggle ${hiddenPondFishIds.includes(sp.id) ? 'hidden' : 'visible'}`}
+                  onClick={() => togglePondFishVisibility(sp.id)}
+                >
+                  {hiddenPondFishIds.includes(sp.id) ? '🚫 Hidden from Pond' : '🌊 In Pond'}
+                </button>
+              )}
             </div>
           );
         })}
