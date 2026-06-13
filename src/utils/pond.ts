@@ -1,9 +1,9 @@
 /** The home pond's starting radius, before any rating-based growth. */
 export const POND_BASE_RADIUS = 6;
 /** The largest the home pond can grow to at maximum pond rating. */
-export const POND_MAX_RADIUS = 9.5;
+export const POND_MAX_RADIUS = 10;
 /** Pond rating at which the pond reaches its maximum size. */
-export const RATING_FOR_MAX_SIZE = 90;
+export const RATING_FOR_MAX_SIZE = 72;
 
 /** Computes the home pond's radius, which grows as the player unlocks more fish and decorations. */
 export function getPondRadius(pondRating: number): number {

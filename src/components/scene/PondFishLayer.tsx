@@ -9,6 +9,8 @@ import { playSplash } from '../../utils/audio';
 import { POND_BASE_RADIUS } from '../../utils/pond';
 
 interface SwimPath {
+  centerX: number;
+  centerZ: number;
   radiusX: number;
   radiusZ: number;
   speed: number;
@@ -16,11 +18,12 @@ interface SwimPath {
   depth: number;
   direction: number;
   pattern: SwimPattern;
+  displayScale: number;
 }
 
 /** Computes the world position for a fish at time t, per its swim pattern. */
 function swimPosition(path: SwimPath, t: number, out: THREE.Vector3): THREE.Vector3 {
-  const { radiusX, radiusZ, speed, phase, depth, direction, pattern } = path;
+  const { centerX, centerZ, radiusX, radiusZ, speed, phase, depth, direction, pattern } = path;
   const tt = t * speed * direction + phase;
 
   switch (pattern) {
@@ -52,6 +55,9 @@ function swimPosition(path: SwimPath, t: number, out: THREE.Vector3): THREE.Vect
       // 'orbit': standard elliptical loop.
       out.set(Math.cos(tt) * radiusX, depth + Math.sin(tt * 3) * 0.05, Math.sin(tt) * radiusZ);
   }
+  // Each fish loops around its own station, spread across the pond, so they don't pile at the center.
+  out.x += centerX;
+  out.z += centerZ;
   return out;
 }
 
@@ -137,9 +143,11 @@ function SwimmingFish({ speciesId, path }: { speciesId: string; path: SwimPath }
   return (
     <>
       <group ref={groupRef}>
-        <FishModel species={species} swimming phase={path.phase} />
+        <group scale={path.displayScale}>
+          <FishModel species={species} swimming phase={path.phase} />
+        </group>
       </group>
-      <mesh ref={shadowRef} rotation={[-Math.PI / 2, 0, 0]} scale={species.size * 0.9}>
+      <mesh ref={shadowRef} rotation={[-Math.PI / 2, 0, 0]} scale={species.size * path.displayScale * 0.9}>
         <circleGeometry args={[0.55, 16]} />
         <meshBasicMaterial color="#03101a" transparent opacity={0.22} depthWrite={false} />
       </mesh>
@@ -151,54 +159,66 @@ function SwimmingFish({ speciesId, path }: { speciesId: string; path: SwimPath }
   );
 }
 
+/** Golden angle (radians) — spreads successive stations evenly without clumping. */
+const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+
 export default function PondFishLayer({ pondRadius = POND_BASE_RADIUS }: { pondRadius?: number }) {
   const unlockedFishIds = useGameStore((s) => s.unlockedFishIds);
-  const spread = pondRadius / POND_BASE_RADIUS;
 
   const paths = useMemo(() => {
     const map: Record<string, SwimPath> = {};
+    const n = unlockedFishIds.length;
+    // Stations fill the pond out to this fraction of the radius (leaving a margin at the rim).
+    const fillRadius = pondRadius * 0.8;
+    // Local loop size shrinks as the pond fills up, so crowded ponds stay tidy.
+    const loop = THREE.MathUtils.clamp(pondRadius / Math.sqrt(n + 1) * 0.4, 0.35, 1.1);
+
     unlockedFishIds.forEach((id, i) => {
       const species = FISH_BY_ID[id];
       const pattern: SwimPattern = species?.swimPattern ?? 'orbit';
       const seed = i * 13.37;
-      const baseRadiusX = 2 + ((seed * 7) % 30) / 10;
-      const baseRadiusZ = 1.5 + ((seed * 11) % 30) / 10;
-      const baseSpeed = 0.15 + ((seed * 3) % 10) / 40;
 
-      let radiusX = baseRadiusX;
-      let radiusZ = baseRadiusZ;
-      let speed = baseSpeed;
+      // Sunflower (phyllotaxis) layout: even area coverage, no central pile-up.
+      const stationR = n > 1 ? fillRadius * Math.sqrt((i + 0.5) / n) : 0;
+      const stationA = i * GOLDEN_ANGLE;
+      const centerX = Math.cos(stationA) * stationR;
+      const centerZ = Math.sin(stationA) * stationR;
+
+      const speed = 0.16 + ((seed * 3) % 10) / 45;
+      let radiusX = loop * (0.85 + ((seed * 7) % 20) / 100);
+      let radiusZ = loop * (0.7 + ((seed * 11) % 20) / 100);
 
       switch (pattern) {
         case 'hover':
-          radiusX = 0.6 + ((seed * 7) % 12) / 10;
-          radiusZ = 0.6 + ((seed * 11) % 12) / 10;
-          speed = baseSpeed * 1.4;
-          break;
-        case 'dart':
-          speed = baseSpeed * 2.2;
+          radiusX *= 0.6;
+          radiusZ *= 0.6;
           break;
         case 'glide':
-          radiusX = baseRadiusX * 1.3;
-          radiusZ = baseRadiusZ * 1.3;
-          speed = baseSpeed * 0.7;
+          radiusX *= 1.25;
+          radiusZ *= 1.25;
           break;
         default:
           break;
       }
 
+      // Tame oversized legendaries so a full pond stays readable; small fish keep their size.
+      const displayScale = species ? Math.min(1, 1.25 / species.size) : 1;
+
       map[id] = {
-        radiusX: radiusX * spread,
-        radiusZ: radiusZ * spread,
+        centerX,
+        centerZ,
+        radiusX,
+        radiusZ,
         speed,
         phase: seed,
-        depth: -0.15 - ((seed * 5) % 10) / 40,
+        depth: -0.14 - ((seed * 5) % 10) / 50,
         direction: i % 2 === 0 ? 1 : -1,
         pattern,
+        displayScale,
       };
     });
     return map;
-  }, [unlockedFishIds, spread]);
+  }, [unlockedFishIds, pondRadius]);
 
   return (
     <group>
