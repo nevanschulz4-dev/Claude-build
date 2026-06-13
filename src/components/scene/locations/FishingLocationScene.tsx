@@ -19,9 +19,26 @@ interface FishingLocationSceneProps {
 export default function FishingLocationScene({ biome, biomeId }: FishingLocationSceneProps) {
   const { water, ...theme } = biome;
 
+  // The river runs off toward the horizon, so its backdrop water is stretched into a channel
+  // rather than spreading out evenly like a lake or open sea.
+  const horizonScale: [number, number, number] = biomeId === 'river' ? [1.6, 1, 0.85] : [1, 1, 1];
+
   return (
     <>
       <Environment {...theme} biomeId={biomeId} />
+      {/* Vast body of water stretching past the shore into the haze */}
+      <group scale={horizonScale}>
+        <Water
+          radius={48}
+          innerRadius={15}
+          y={-0.1}
+          shallow={water.shallow}
+          deep={water.deep}
+          foam={water.foam}
+          flowing={biomeId === 'river'}
+          waveScale={biomeId === 'ocean' ? 1.3 : 0.6}
+        />
+      </group>
       <Water
         radius={6}
         shallow={water.shallow}

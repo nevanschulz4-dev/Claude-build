@@ -47,6 +47,9 @@ export const LOCATION_BY_ID: Record<LocationId, LocationDef> = Object.fromEntrie
 export const BIOMES: Record<Exclude<LocationId, 'home'>, BiomeDef> = {
   river: {
     water: { shallow: '#8FE3D9', deep: '#1F7A8C', foam: '#EAFBFF' },
+    fogColor: '#cdeee0',
+    fogNear: 26,
+    fogFar: 64,
   },
   lake: {
     groundTint: '#cfe8d6',
@@ -60,6 +63,9 @@ export const BIOMES: Record<Exclude<LocationId, 'home'>, BiomeDef> = {
     treeLeafColors: ['#2E5E3E', '#3A7050', '#264D34', '#46835A'],
     hillColors: ['#477A56', '#3C6B4C'],
     water: { shallow: '#6FA8C9', deep: '#1B3B5C', foam: '#E8F4FF' },
+    fogColor: '#c4d8ec',
+    fogNear: 22,
+    fogFar: 58,
   },
   ocean: {
     groundTexture: 'sand',
@@ -73,6 +79,9 @@ export const BIOMES: Record<Exclude<LocationId, 'home'>, BiomeDef> = {
     treeLeafColors: ['#8FCB5A', '#A8D86B', '#7DBF4F', '#C9E27A'],
     hillColors: ['#E8D7A8', '#D8C28A'],
     water: { shallow: '#5FE0E0', deep: '#0A4F7A', foam: '#FFFFFF' },
+    fogColor: '#cdf3fb',
+    fogNear: 30,
+    fogFar: 70,
   },
   swamp: {
     groundTexture: 'mud',
@@ -88,5 +97,8 @@ export const BIOMES: Record<Exclude<LocationId, 'home'>, BiomeDef> = {
     treeLeafColors: ['#4A5D3A', '#5C6E45', '#3E4F30', '#6B7A4F'],
     hillColors: ['#5C6E45', '#4A5D3A'],
     water: { shallow: '#7A8C5C', deep: '#2E3B1F', foam: '#A8B98A' },
+    fogColor: '#9aa88c',
+    fogNear: 10,
+    fogFar: 46,
   },
 };

@@ -145,6 +145,10 @@ export interface EnvironmentTheme {
   hemisphereGround?: string;
   treeLeafColors?: string[];
   hillColors?: string[];
+  /** Haze color/distances that swallow the horizon, so distant water fades from view. */
+  fogColor?: string;
+  fogNear?: number;
+  fogFar?: number;
 }
 
 export interface BiomeDef extends EnvironmentTheme {

@@ -98,6 +98,10 @@ const FRAGMENT_SHADER = /* glsl */ `
 
 interface WaterProps {
   radius?: number;
+  /** When set, renders an annulus instead of a full disc - for a backdrop body of water surrounding the island. */
+  innerRadius?: number;
+  /** Height of the water plane. */
+  y?: number;
   shallow: string;
   deep: string;
   foam: string;
@@ -107,7 +111,7 @@ interface WaterProps {
   waveScale?: number;
 }
 
-export default function Water({ radius = 6, shallow, deep, foam, flowing = false, waveScale = 1 }: WaterProps) {
+export default function Water({ radius = 6, innerRadius = 0, y = 0.05, shallow, deep, foam, flowing = false, waveScale = 1 }: WaterProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
   // Created once; color values are updated in place via useFrame below.
@@ -149,8 +153,12 @@ export default function Water({ radius = 6, shallow, deep, foam, flowing = false
   });
 
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]} receiveShadow>
-      <circleGeometry args={[radius, 96]} />
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, y, 0]} receiveShadow>
+      {innerRadius > 0 ? (
+        <ringGeometry args={[innerRadius, radius, 96, 16]} />
+      ) : (
+        <circleGeometry args={[radius, 96]} />
+      )}
       <shaderMaterial
         ref={materialRef}
         uniforms={uniforms}

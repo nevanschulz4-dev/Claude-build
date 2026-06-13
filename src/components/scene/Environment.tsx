@@ -82,6 +82,9 @@ export default function Environment({
   hemisphereGround = '#7bc47f',
   treeLeafColors = LEAF_COLORS,
   hillColors = HILL_COLORS,
+  fogColor,
+  fogNear,
+  fogFar,
   biomeId,
   pondRadius = 6,
 }: EnvironmentProps) {
@@ -140,9 +143,11 @@ export default function Environment({
 
   const fogConfig = useMemo<[string, number, number] | null>(() => {
     if (isRaining) return ['#7d8a99', 8, 38];
-    if (biomeId === 'swamp') return ['#9aa88c', 10, 42];
+    if (fogColor !== undefined && fogNear !== undefined && fogFar !== undefined) {
+      return [fogColor, fogNear, fogFar];
+    }
     return null;
-  }, [isRaining, biomeId]);
+  }, [isRaining, fogColor, fogNear, fogFar]);
 
   const textures: Record<'grass' | 'sand' | 'mud', THREE.Texture> = {
     grass: grassTexture,
@@ -205,7 +210,7 @@ export default function Environment({
         </group>
       )}
 
-      {/* Murky haze for the swamp, or low visibility during rain */}
+      {/* Distant haze swallows the horizon, or low visibility during rain */}
       {fogConfig && <fog attach="fog" args={fogConfig} />}
 
       {/* Falling rain */}
